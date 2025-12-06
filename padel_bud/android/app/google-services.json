@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "92444002158",
+    "project_id": "padelbud-99086",
+    "storage_bucket": "padelbud-99086.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:92444002158:android:0ef07e970f865de6ff637f",
+        "android_client_info": {
+          "package_name": "com.example.padel_bud"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBk1jXVtTNw0mWVpPLPI7Zct7Ua-1Js6mg"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

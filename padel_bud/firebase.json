@@ -1,0 +1,42 @@
+{
+  "flutter": {
+    "platforms": {
+      "android": {
+        "default": {
+          "projectId": "padelbud-99086",
+          "appId": "1:92444002158:android:0ef07e970f865de6ff637f",
+          "fileOutput": "android/app/google-services.json"
+        }
+      },
+      "dart": {
+        "lib/firebase_options.dart": {
+          "projectId": "padelbud-99086",
+          "configurations": {
+            "android": "1:92444002158:android:0ef07e970f865de6ff637f",
+            "ios": "1:92444002158:ios:06493a9600ba60eaff637f",
+            "macos": "1:92444002158:ios:06493a9600ba60eaff637f",
+            "web": "1:92444002158:web:37aaa506a77e32d2ff637f",
+            "windows": "1:92444002158:web:a35479f0ce687863ff637f"
+          }
+        }
+      }
+    }
+  },
+  "functions": [
+    {
+      "source": "functions",
+      "codebase": "default",
+      "ignore": [
+        "node_modules",
+        ".git",
+        "firebase-debug.log",
+        "firebase-debug.*.log",
+        "*.local"
+      ],
+      "predeploy": [
+        "npm --prefix \"$RESOURCE_DIR\" run lint",
+        "npm --prefix \"$RESOURCE_DIR\" run build"
+      ]
+    }
+  ]
+}
