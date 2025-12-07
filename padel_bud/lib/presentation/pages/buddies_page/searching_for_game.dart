@@ -26,7 +26,7 @@ class _SearchingForMatchPageState extends ConsumerState<SearchingForMatchPage> {
         flexibleSpace: Container(
           decoration: const BoxDecoration(
             gradient: LinearGradient(
-              colors: [Color(0xFF1E88E5), Color(0xFF42A5F5)],
+              colors: [Color(0xFF2E7D32), Color(0xFF66BB6A)],
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
             ),
@@ -62,12 +62,12 @@ class _SearchingForMatchPageState extends ConsumerState<SearchingForMatchPage> {
                 width: 100,
                 height: 100,
                 decoration: BoxDecoration(
-                  color: const Color(0xFF1E88E5).withOpacity(0.1),
+                  color: const Color(0xFF2E7D32).withOpacity(0.1),
                   borderRadius: BorderRadius.circular(24),
                 ),
                 child: const Icon(
                   Icons.group_add,
-                  color: Color(0xFF1E88E5),
+                  color: Color(0xFF2E7D32),
                   size: 50,
                 ),
               ),
@@ -96,7 +96,7 @@ class _SearchingForMatchPageState extends ConsumerState<SearchingForMatchPage> {
                 height: 60,
                 child: CircularProgressIndicator(
                   valueColor: AlwaysStoppedAnimation<Color>(
-                    Color(0xFF1E88E5),
+                    Color(0xFF2E7D32),
                   ),
                   strokeWidth: 3,
                 ),

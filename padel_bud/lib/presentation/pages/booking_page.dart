@@ -144,7 +144,7 @@ class _BookingPageState extends State<BookingPage> {
 
       appBar: AppBar(
         elevation: 0,
-        backgroundColor: Colors.blue.shade600,
+        backgroundColor: Colors.green.shade600,
         title: Row(
           children: [
             Expanded(
@@ -191,7 +191,7 @@ class _BookingPageState extends State<BookingPage> {
                     icon: Icon(
                       Icons.arrow_back_ios,
                       color: _currentDay.isAfter(_today)
-                          ? Colors.blue
+                          ? Colors.green
                           : Colors.grey,
                     ),
                   ),
@@ -202,7 +202,7 @@ class _BookingPageState extends State<BookingPage> {
                         _getLocalizedDayName(_currentDay),
                         style: TextStyle(
                           fontSize: 16,
-                          color: Colors.blue.shade600,
+                          color: Colors.green.shade600,
                         ),
                       ),
                       const SizedBox(height: 4),
@@ -229,7 +229,7 @@ class _BookingPageState extends State<BookingPage> {
                           _currentDay.isBefore(
                             _today.add(const Duration(days: 7)),
                           )
-                          ? Colors.blue
+                          ? Colors.green
                           : Colors.grey,
                     ),
                   ),

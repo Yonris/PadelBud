@@ -48,7 +48,7 @@ class _SelectTimePageState extends ConsumerState<SelectTimePage> {
         flexibleSpace: Container(
           decoration: const BoxDecoration(
             gradient: LinearGradient(
-              colors: [Color(0xFF1E88E5), Color(0xFF42A5F5)],
+              colors: [Color(0xFF2E7D32), Color(0xFF66BB6A)],
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
             ),
@@ -130,12 +130,12 @@ class _SelectTimePageState extends ConsumerState<SelectTimePage> {
           width: 50,
           height: 50,
           decoration: BoxDecoration(
-            color: const Color(0xFF1E88E5).withOpacity(0.1),
+            color: const Color(0xFF2E7D32).withOpacity(0.1),
             borderRadius: BorderRadius.circular(12),
           ),
           child: const Icon(
             Icons.calendar_today,
-            color: Color(0xFF1E88E5),
+            color: Color(0xFF2E7D32),
           ),
         ),
         title: Text(
@@ -181,12 +181,12 @@ class _SelectTimePageState extends ConsumerState<SelectTimePage> {
           width: 50,
           height: 50,
           decoration: BoxDecoration(
-            color: const Color(0xFF1E88E5).withOpacity(0.1),
+            color: const Color(0xFF2E7D32).withOpacity(0.1),
             borderRadius: BorderRadius.circular(12),
           ),
           child: const Icon(
             Icons.access_time,
-            color: Color(0xFF1E88E5),
+            color: Color(0xFF2E7D32),
           ),
         ),
         title: Text(
@@ -205,7 +205,7 @@ class _SelectTimePageState extends ConsumerState<SelectTimePage> {
             color: Colors.black87,
           ),
         ),
-        trailing: const Icon(Icons.arrow_forward_ios, color: Color(0xFF1E88E5)),
+        trailing: const Icon(Icons.arrow_forward_ios, color: Color(0xFF2E7D32)),
         onTap: pickTime,
       ),
     );
@@ -217,7 +217,7 @@ class _SelectTimePageState extends ConsumerState<SelectTimePage> {
       height: 56,
       child: ElevatedButton(
         style: ElevatedButton.styleFrom(
-          backgroundColor: const Color(0xFF1E88E5),
+          backgroundColor: const Color(0xFF2E7D32),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(16),
           ),

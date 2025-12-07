@@ -109,7 +109,7 @@ class MyApp extends ConsumerWidget {
         Locale('he'),
       ],
       title: 'PadelBud',
-      theme: ThemeData(primarySwatch: Colors.blue),
+      theme: ThemeData(primarySwatch: Colors.green),
       home: const MainNavigationPage(),
     );
   }

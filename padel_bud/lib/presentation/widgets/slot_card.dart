@@ -22,7 +22,7 @@ class SlotCard extends StatelessWidget {
         decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: Colors.blue.shade400, width: 1.5),
+          border: Border.all(color: Colors.green.shade400, width: 1.5),
           boxShadow: [
             BoxShadow(
               color: Colors.black.withOpacity(0.06),
@@ -36,7 +36,7 @@ class SlotCard extends StatelessWidget {
           children: [
             Icon(
               Icons.access_time_filled,
-              color: Colors.blue.shade600,
+              color: Colors.green.shade600,
               size: 24,
             ),
             const SizedBox(width: 14),
@@ -59,7 +59,7 @@ class SlotCard extends StatelessWidget {
                     style: TextStyle(
                       fontSize: 13,
                       fontWeight: FontWeight.w500,
-                      color: Colors.blue.shade600,
+                      color: Colors.green.shade600,
                     ),
                   ),
                 ],
@@ -69,7 +69,7 @@ class SlotCard extends StatelessWidget {
             ElevatedButton(
               onPressed: onBook,
               style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.blue.shade600,
+                backgroundColor: Colors.green.shade600,
                 padding: const EdgeInsets.symmetric(
                   horizontal: 24,
                   vertical: 12,

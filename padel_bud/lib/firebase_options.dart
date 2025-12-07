@@ -64,7 +64,7 @@ class DefaultFirebaseOptions {
     messagingSenderId: '92444002158',
     projectId: 'padelbud-99086',
     storageBucket: 'padelbud-99086.firebasestorage.app',
-    iosBundleId: 'com.example.padelBud',
+    iosBundleId: 'com.buddies.padelBud',
   );
 
   static const FirebaseOptions macos = FirebaseOptions(
@@ -73,7 +73,7 @@ class DefaultFirebaseOptions {
     messagingSenderId: '92444002158',
     projectId: 'padelbud-99086',
     storageBucket: 'padelbud-99086.firebasestorage.app',
-    iosBundleId: 'com.example.padelBud',
+    iosBundleId: 'com.buddies.padelBud',
   );
 
   static const FirebaseOptions windows = FirebaseOptions(

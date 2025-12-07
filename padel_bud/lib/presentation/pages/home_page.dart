@@ -93,7 +93,7 @@ class _HomePageState extends ConsumerState<HomePage> {
         flexibleSpace: Container(
           decoration: const BoxDecoration(
             gradient: LinearGradient(
-              colors: [Color(0xFF1E88E5), Color(0xFF42A5F5)],
+              colors: [Color(0xFF2E7D32), Color(0xFF66BB6A)],
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
             ),
@@ -182,7 +182,7 @@ class _HomePageState extends ConsumerState<HomePage> {
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(
-              child: CircularProgressIndicator(color: Colors.blue),
+              child: CircularProgressIndicator(color: Colors.green),
             );
           }
 
@@ -204,18 +204,18 @@ class _HomePageState extends ConsumerState<HomePage> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  const Icon(Icons.sports_tennis, size: 70, color: Colors.blue),
+                  const Icon(Icons.sports_tennis, size: 70, color: Colors.green),
                   const SizedBox(height: 12),
                   Text(
                     userLocation == null
                         ? AppLocalizations.of(context).waitingForLocation
                         : AppLocalizations.of(context).noClubsAvailable,
-                    style: const TextStyle(fontSize: 18, color: Colors.blue),
+                    style: const TextStyle(fontSize: 18, color: Colors.green),
                   ),
                   if (userLocation == null)
                     const Padding(
                       padding: EdgeInsets.only(top: 16),
-                      child: CircularProgressIndicator(color: Colors.blue),
+                      child: CircularProgressIndicator(color: Colors.green),
                     ),
                 ],
               ),
@@ -223,7 +223,7 @@ class _HomePageState extends ConsumerState<HomePage> {
           }
 
           return RefreshIndicator(
-            color: Colors.blue,
+            color: Colors.green,
             onRefresh: _refreshCourts,
             child: ListView.builder(
               padding: const EdgeInsets.all(16),

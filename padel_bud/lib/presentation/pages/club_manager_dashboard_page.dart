@@ -49,7 +49,7 @@ class _ClubManagerDashboardPageState extends State<ClubManagerDashboardPage> {
         flexibleSpace: Container(
           decoration: const BoxDecoration(
             gradient: LinearGradient(
-              colors: [Color(0xFF1E88E5), Color(0xFF42A5F5)],
+              colors: [Color(0xFF2E7D32), Color(0xFF66BB6A)],
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
             ),
@@ -117,7 +117,7 @@ class _ClubManagerDashboardPageState extends State<ClubManagerDashboardPage> {
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: Colors.blue.shade200, width: 2),
+        border: Border.all(color: Colors.green.shade200, width: 2),
         boxShadow: [
           BoxShadow(
             color: Colors.black.withOpacity(0.05),

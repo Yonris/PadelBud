@@ -73,7 +73,7 @@ class _ClubManagerCourtSchedulePageState
         flexibleSpace: Container(
           decoration: const BoxDecoration(
             gradient: LinearGradient(
-              colors: [Color(0xFF1E88E5), Color(0xFF42A5F5)],
+              colors: [Color(0xFF2E7D32), Color(0xFF66BB6A)],
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
             ),
@@ -130,7 +130,7 @@ class _ClubManagerCourtSchedulePageState
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: Colors.blue.shade200, width: 2),
+        border: Border.all(color: Colors.green.shade200, width: 2),
         boxShadow: [
           BoxShadow(
             color: Colors.black.withOpacity(0.05),
@@ -144,7 +144,7 @@ class _ClubManagerCourtSchedulePageState
           Container(
             padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
-              color: Colors.blue.shade50,
+              color: Colors.green.shade50,
               borderRadius: const BorderRadius.only(
                 topLeft: Radius.circular(14),
                 topRight: Radius.circular(14),
@@ -156,7 +156,7 @@ class _ClubManagerCourtSchedulePageState
                   width: 50,
                   height: 50,
                   decoration: BoxDecoration(
-                    color: Colors.blue.shade600,
+                    color: Colors.green.shade600,
                     borderRadius: BorderRadius.circular(12),
                   ),
                   child: const Icon(

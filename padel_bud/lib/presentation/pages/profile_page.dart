@@ -150,7 +150,7 @@ class _EditProfilePageState extends ConsumerState<EditProfilePage> {
         flexibleSpace: Container(
           decoration: const BoxDecoration(
             gradient: LinearGradient(
-              colors: [Color(0xFF1E88E5), Color(0xFF42A5F5)],
+              colors: [Color(0xFF2E7D32), Color(0xFF66BB6A)],
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
             ),
@@ -198,7 +198,7 @@ class _EditProfilePageState extends ConsumerState<EditProfilePage> {
                   ),
                   Container(
                     decoration: BoxDecoration(
-                      color: const Color(0xFF1E88E5),
+                      color: const Color(0xFF2E7D32),
                       borderRadius: BorderRadius.circular(12),
                     ),
                     padding: const EdgeInsets.all(8),
@@ -253,7 +253,7 @@ class _EditProfilePageState extends ConsumerState<EditProfilePage> {
               height: 56,
               child: ElevatedButton(
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: _isSaving ? Colors.grey : const Color(0xFF1E88E5),
+                  backgroundColor: _isSaving ? Colors.grey : const Color(0xFF2E7D32),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(16),
                   ),
@@ -323,7 +323,7 @@ class _EditProfilePageState extends ConsumerState<EditProfilePage> {
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
             child: Row(
               children: [
-                Icon(Icons.language, color: const Color(0xFF1E88E5)),
+                Icon(Icons.language, color: const Color(0xFF2E7D32)),
                 const SizedBox(width: 12),
                 Expanded(
                   child: DropdownButton<String>(
@@ -374,7 +374,7 @@ class _EditProfilePageState extends ConsumerState<EditProfilePage> {
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
         child: Row(
           children: [
-            Icon(Icons.sports_tennis, color: const Color(0xFF1E88E5)),
+            Icon(Icons.sports_tennis, color: const Color(0xFF2E7D32)),
             const SizedBox(width: 12),
             Expanded(
               child: DropdownButton<double>(
@@ -455,7 +455,7 @@ class _EditProfilePageState extends ConsumerState<EditProfilePage> {
         controller: controller,
         decoration: InputDecoration(
           labelText: label,
-          prefixIcon: Icon(icon, color: const Color(0xFF1E88E5)),
+          prefixIcon: Icon(icon, color: const Color(0xFF2E7D32)),
           border: OutlineInputBorder(
             borderRadius: BorderRadius.circular(16),
             borderSide: BorderSide.none,

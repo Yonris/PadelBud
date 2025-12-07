@@ -36,7 +36,7 @@ class CourtCard extends StatelessWidget {
         color: Colors.white,
         borderRadius: BorderRadius.circular(18),
         border: Border.all(
-          color: Colors.blue.shade600,
+          color: Colors.green.shade600,
           width: 2.2,
         ),
         boxShadow: [
@@ -94,7 +94,7 @@ class CourtCard extends StatelessWidget {
             // Book Button
             ElevatedButton(
               style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.blue[600],
+                backgroundColor: Colors.green[600],
                 padding: const EdgeInsets.symmetric(
                   horizontal: 18,
                   vertical: 10,

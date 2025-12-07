@@ -20,8 +20,8 @@ class LoginPage extends ConsumerWidget {
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
             colors: [
-              Color(0xFF1E88E5),
-              Color(0xFF42A5F5),
+              Color(0xFF2E7D32),
+              Color(0xFF66BB6A),
             ],
           ),
         ),

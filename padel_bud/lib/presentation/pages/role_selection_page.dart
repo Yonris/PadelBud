@@ -74,7 +74,7 @@ class _RoleSelectionPageState extends ConsumerState<RoleSelectionPage> {
                     height: 100,
                     decoration: BoxDecoration(
                       gradient: const LinearGradient(
-                        colors: [Color(0xFF1E88E5), Color(0xFF42A5F5)],
+                        colors: [Color(0xFF2E7D32), Color(0xFF66BB6A)],
                         begin: Alignment.topLeft,
                         end: Alignment.bottomRight,
                       ),
@@ -124,7 +124,7 @@ class _RoleSelectionPageState extends ConsumerState<RoleSelectionPage> {
                     height: 56,
                     child: ElevatedButton(
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color(0xFF1E88E5),
+                        backgroundColor: const Color(0xFF2E7D32),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(16),
                         ),
@@ -177,13 +177,13 @@ class _RoleSelectionPageState extends ConsumerState<RoleSelectionPage> {
           color: Colors.white,
           borderRadius: BorderRadius.circular(20),
           border: Border.all(
-            color: isSelected ? const Color(0xFF1E88E5) : Colors.grey.shade200,
+            color: isSelected ? const Color(0xFF2E7D32) : Colors.grey.shade200,
             width: isSelected ? 2.5 : 1.5,
           ),
           boxShadow: [
             if (isSelected)
               BoxShadow(
-                color: const Color(0xFF1E88E5).withOpacity(0.15),
+                color: const Color(0xFF2E7D32).withOpacity(0.15),
                 blurRadius: 16,
                 offset: const Offset(0, 4),
               )
@@ -203,13 +203,13 @@ class _RoleSelectionPageState extends ConsumerState<RoleSelectionPage> {
               height: 70,
               decoration: BoxDecoration(
                 color: isSelected
-                    ? const Color(0xFF1E88E5).withOpacity(0.15)
+                    ? const Color(0xFF2E7D32).withOpacity(0.15)
                     : Colors.grey.shade100,
                 borderRadius: BorderRadius.circular(16),
               ),
               child: Icon(
                 icon,
-                color: isSelected ? const Color(0xFF1E88E5) : Colors.grey,
+                color: isSelected ? const Color(0xFF2E7D32) : Colors.grey,
                 size: 36,
               ),
             ),
@@ -224,7 +224,7 @@ class _RoleSelectionPageState extends ConsumerState<RoleSelectionPage> {
                       fontSize: 20,
                       fontWeight: FontWeight.bold,
                       color: isSelected
-                          ? const Color(0xFF1E88E5)
+                          ? const Color(0xFF2E7D32)
                           : Colors.black87,
                     ),
                   ),
@@ -241,7 +241,7 @@ class _RoleSelectionPageState extends ConsumerState<RoleSelectionPage> {
                 width: 28,
                 height: 28,
                 decoration: const BoxDecoration(
-                  color: Color(0xFF1E88E5),
+                  color: Color(0xFF2E7D32),
                   shape: BoxShape.circle,
                 ),
                 child: const Icon(Icons.check, color: Colors.white, size: 16),

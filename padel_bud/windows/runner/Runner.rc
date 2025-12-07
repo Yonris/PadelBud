@@ -89,11 +89,11 @@ BEGIN
     BEGIN
         BLOCK "040904e4"
         BEGIN
-            VALUE "CompanyName", "com.example" "\0"
+            VALUE "CompanyName", "com.buddies" "\0"
             VALUE "FileDescription", "padel_bud" "\0"
             VALUE "FileVersion", VERSION_AS_STRING "\0"
             VALUE "InternalName", "padel_bud" "\0"
-            VALUE "LegalCopyright", "Copyright (C) 2025 com.example. All rights reserved." "\0"
+            VALUE "LegalCopyright", "Copyright (C) 2025 com.buddies. All rights reserved." "\0"
             VALUE "OriginalFilename", "padel_bud.exe" "\0"
             VALUE "ProductName", "padel_bud" "\0"
             VALUE "ProductVersion", VERSION_AS_STRING "\0"

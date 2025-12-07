@@ -71,12 +71,12 @@ class _PaymentDialogState extends State<PaymentDialog> {
               width: 56,
               height: 56,
               decoration: BoxDecoration(
-                color: const Color(0xFF1E88E5).withValues(alpha: 0.1),
+                color: const Color(0xFF2E7D32).withValues(alpha: 0.1),
                 borderRadius: BorderRadius.circular(14),
               ),
               child: const Icon(
                 Icons.credit_card_rounded,
-                color: Color(0xFF1E88E5),
+                color: Color(0xFF2E7D32),
                 size: 28,
               ),
             ),
@@ -103,16 +103,16 @@ class _PaymentDialogState extends State<PaymentDialog> {
                 width: double.infinity,
                 padding: const EdgeInsets.all(14),
                 decoration: BoxDecoration(
-                  color: Colors.blue.shade50,
+                  color: Colors.green.shade50,
                   borderRadius: BorderRadius.circular(12),
-                  border: Border.all(color: Colors.blue.shade200),
+                  border: Border.all(color: Colors.green.shade200),
                 ),
                 child: Row(
                   children: [
                     Icon(
                       Icons.access_time,
                       size: 18,
-                      color: Colors.blue.shade600,
+                      color: Colors.green.shade600,
                     ),
                     const SizedBox(width: 10),
                     Expanded(
@@ -121,7 +121,7 @@ class _PaymentDialogState extends State<PaymentDialog> {
                         style: TextStyle(
                           fontSize: 14,
                           fontWeight: FontWeight.w600,
-                          color: Colors.blue.shade700,
+                          color: Colors.green.shade700,
                         ),
                       ),
                     ),
@@ -154,7 +154,7 @@ class _PaymentDialogState extends State<PaymentDialog> {
                     style: const TextStyle(
                       fontSize: 28,
                       fontWeight: FontWeight.w700,
-                      color: Color(0xFF1E88E5),
+                      color: Color(0xFF2E7D32),
                     ),
                   ),
                 ],
@@ -167,7 +167,7 @@ class _PaymentDialogState extends State<PaymentDialog> {
               child: ElevatedButton(
                 onPressed: _processing ? null : _handlePayment,
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xFF1E88E5),
+                  backgroundColor: const Color(0xFF2E7D32),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(12),
                   ),

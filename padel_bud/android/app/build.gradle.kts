@@ -9,7 +9,7 @@ plugins {
 }
 
 android {
-    namespace = "com.example.padel_bud"
+    namespace = "com.buddies.padel_bud"
     compileSdk = flutter.compileSdkVersion
     ndkVersion = "27.0.12077973"
 
@@ -23,8 +23,8 @@ android {
     }
 
     defaultConfig {
-        applicationId = "com.example.padel_bud"
-        minSdk = 23
+        applicationId = "com.buddies.padel_bud"
+        minSdk = flutter.minSdkVersion
         targetSdk = flutter.targetSdkVersion
         versionCode = flutter.versionCode
         versionName = flutter.versionName

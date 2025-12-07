@@ -105,7 +105,7 @@ class _MainNavigationPageState extends ConsumerState<MainNavigationPage> {
         backgroundColor: Colors.white,
         type: BottomNavigationBarType.fixed,
         elevation: 12,
-        selectedItemColor: const Color(0xFF1E88E5),
+        selectedItemColor: const Color(0xFF2E7D32),
         unselectedItemColor: Colors.grey,
         selectedLabelStyle: const TextStyle(fontWeight: FontWeight.bold),
         unselectedLabelStyle: const TextStyle(fontWeight: FontWeight.w500),

@@ -59,12 +59,12 @@ class _PhoneInputPageState extends ConsumerState<PhoneInputPage> {
                   width: 60,
                   height: 60,
                   decoration: BoxDecoration(
-                    color: const Color(0xFF1E88E5).withOpacity(0.1),
+                    color: const Color(0xFF2E7D32).withOpacity(0.1),
                     borderRadius: BorderRadius.circular(16),
                   ),
                   child: const Icon(
                     Icons.mail_outline,
-                    color: Color(0xFF1E88E5),
+                    color: Color(0xFF2E7D32),
                     size: 32,
                   ),
                 ),
@@ -113,7 +113,7 @@ class _PhoneInputPageState extends ConsumerState<PhoneInputPage> {
                     focusedBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(12),
                       borderSide: const BorderSide(
-                        color: Color(0xFF1E88E5),
+                        color: Color(0xFF2E7D32),
                         width: 2,
                       ),
                     ),
@@ -136,7 +136,7 @@ class _PhoneInputPageState extends ConsumerState<PhoneInputPage> {
                   height: 48,
                   child: ElevatedButton(
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0xFF1E88E5),
+                      backgroundColor: const Color(0xFF2E7D32),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(12),
                       ),
@@ -253,7 +253,7 @@ class _PhoneInputPageState extends ConsumerState<PhoneInputPage> {
                   height: 80,
                   decoration: BoxDecoration(
                     gradient: const LinearGradient(
-                      colors: [Color(0xFF1E88E5), Color(0xFF42A5F5)],
+                      colors: [Color(0xFF2E7D32), Color(0xFF66BB6A)],
                       begin: Alignment.topLeft,
                       end: Alignment.bottomRight,
                     ),
@@ -303,7 +303,7 @@ class _PhoneInputPageState extends ConsumerState<PhoneInputPage> {
                       labelText: AppLocalizations.of(context).countryState,
                       prefixIcon: const Icon(
                         Icons.public_outlined,
-                        color: Color(0xFF1E88E5),
+                        color: Color(0xFF2E7D32),
                       ),
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(16),
@@ -362,7 +362,7 @@ class _PhoneInputPageState extends ConsumerState<PhoneInputPage> {
                           children: [
                             const Icon(
                               Icons.phone_outlined,
-                              color: Color(0xFF1E88E5),
+                              color: Color(0xFF2E7D32),
                               size: 20,
                             ),
                             const SizedBox(width: 4),
@@ -371,7 +371,7 @@ class _PhoneInputPageState extends ConsumerState<PhoneInputPage> {
                                   ? countryToCode[selectedCountry]!
                                   : '+972',
                               style: const TextStyle(
-                                color: Color(0xFF1E88E5),
+                                color: Color(0xFF2E7D32),
                                 fontSize: 16,
                                 fontWeight: FontWeight.w600,
                               ),
@@ -406,7 +406,7 @@ class _PhoneInputPageState extends ConsumerState<PhoneInputPage> {
                   height: 56,
                   child: ElevatedButton(
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0xFF1E88E5),
+                      backgroundColor: const Color(0xFF2E7D32),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(16),
                       ),

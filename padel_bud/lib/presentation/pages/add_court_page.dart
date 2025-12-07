@@ -343,7 +343,7 @@ class _AddCourtPageState extends ConsumerState<AddCourtPage> {
         flexibleSpace: Container(
           decoration: const BoxDecoration(
             gradient: LinearGradient(
-              colors: [Color(0xFF1E88E5), Color(0xFF42A5F5)],
+              colors: [Color(0xFF2E7D32), Color(0xFF66BB6A)],
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
             ),
@@ -448,7 +448,7 @@ class _AddCourtPageState extends ConsumerState<AddCourtPage> {
                             const Icon(
                               Icons.image_outlined,
                               size: 48,
-                              color: Color(0xFF1E88E5),
+                              color: Color(0xFF2E7D32),
                             ),
                             const SizedBox(height: 12),
                             Text(
@@ -489,7 +489,7 @@ class _AddCourtPageState extends ConsumerState<AddCourtPage> {
                 height: 56,
                 child: ElevatedButton(
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFF1E88E5),
+                    backgroundColor: const Color(0xFF2E7D32),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(14),
                     ),
@@ -543,7 +543,7 @@ class _AddCourtPageState extends ConsumerState<AddCourtPage> {
         color: Colors.white,
         borderRadius: BorderRadius.circular(14),
         border: Border.all(
-          color: sched.closed ? Colors.grey.shade200 : Colors.blue.shade200,
+          color: sched.closed ? Colors.grey.shade200 : Colors.green.shade200,
           width: 1.5,
         ),
         boxShadow: [
@@ -579,7 +579,7 @@ class _AddCourtPageState extends ConsumerState<AddCourtPage> {
                         '${sched.start?.format(context)} - ${sched.end?.format(context)}',
                         style: TextStyle(
                           fontSize: 13,
-                          color: Colors.blue.shade600,
+                          color: Colors.green.shade600,
                           fontWeight: FontWeight.w500,
                         ),
                       )
@@ -616,7 +616,7 @@ class _AddCourtPageState extends ConsumerState<AddCourtPage> {
                     title: Text(AppLocalizations.of(context).markAsClosed),
                     value: sched.closed,
                     onChanged: (v) => setState(() => sched.closed = v ?? false),
-                    activeColor: const Color(0xFF1E88E5),
+                    activeColor: const Color(0xFF2E7D32),
                     contentPadding: EdgeInsets.zero,
                   ),
                   if (!sched.closed) ...[
@@ -658,7 +658,7 @@ class _AddCourtPageState extends ConsumerState<AddCourtPage> {
                       label: Text(AppLocalizations.of(context).copyToAllDays),
 
                       style: TextButton.styleFrom(
-                        foregroundColor: Colors.blue.shade600,
+                        foregroundColor: Colors.green.shade600,
                       ),
                     ),
                   ),
@@ -677,7 +677,7 @@ class _AddCourtPageState extends ConsumerState<AddCourtPage> {
   }) {
     return Container(
       decoration: BoxDecoration(
-        border: Border.all(color: Colors.blue.shade200),
+        border: Border.all(color: Colors.green.shade200),
         borderRadius: BorderRadius.circular(10),
       ),
       child: TextButton(
@@ -688,14 +688,14 @@ class _AddCourtPageState extends ConsumerState<AddCourtPage> {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(Icons.access_time, size: 18, color: Colors.blue.shade600),
+            Icon(Icons.access_time, size: 18, color: Colors.green.shade600),
             const SizedBox(width: 6),
             Text(
               label,
               style: TextStyle(
                 fontSize: 14,
                 fontWeight: FontWeight.w600,
-                color: Colors.blue.shade600,
+                color: Colors.green.shade600,
               ),
             ),
           ],
@@ -727,7 +727,7 @@ class _AddCourtPageState extends ConsumerState<AddCourtPage> {
         validator: validator,
         decoration: InputDecoration(
           hintText: label,
-          prefixIcon: Icon(icon, color: const Color(0xFF1E88E5)),
+          prefixIcon: Icon(icon, color: const Color(0xFF2E7D32)),
           border: OutlineInputBorder(
             borderRadius: BorderRadius.circular(16),
             borderSide: BorderSide.none,
@@ -775,7 +775,7 @@ class _AddCourtPageState extends ConsumerState<AddCourtPage> {
             decoration: InputDecoration(
               prefixIcon: const Icon(
                 Icons.timer_outlined,
-                color: Color(0xFF1E88E5),
+                color: Color(0xFF2E7D32),
               ),
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(16),
@@ -841,7 +841,7 @@ class _AddCourtPageState extends ConsumerState<AddCourtPage> {
                     hintText: 'Enter price',
                     prefixIcon: const Icon(
                       Icons.attach_money,
-                      color: Color(0xFF1E88E5),
+                      color: Color(0xFF2E7D32),
                     ),
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(16),
