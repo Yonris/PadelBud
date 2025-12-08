@@ -2,16 +2,17 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 
 class ClubModel {
   String id;
-  final String name;
+  String name;
   final GeoPoint location;
-  final String address;
+  String address;
   final int numberOfCourts;
   final int gameDuration;
-  final String currency;
+  String currency;
   final double price;
   final Map<String, Map<String, dynamic>> schedule;
-  final String? imageUrl;
-
+  String? imageUrl;
+  final String managerId;
+  String? phone;
   ClubModel({
     required this.id,
     required this.name,
@@ -22,7 +23,9 @@ class ClubModel {
     required this.currency,
     required this.price,
     required this.schedule,
+    required this.managerId,
     this.imageUrl,
+    this.phone,
   });
 
   Map<String, dynamic> toJson() => {
@@ -35,8 +38,10 @@ class ClubModel {
     'price': price,
     'schedule': schedule,
     'imageUrl': imageUrl,
+    'managerId': managerId,
+    'phone': phone,
   };
-  
+
   factory ClubModel.fromDocument(DocumentSnapshot doc) {
     final data = doc.data() as Map<String, dynamic>;
     return ClubModel(
@@ -50,6 +55,8 @@ class ClubModel {
       price: (data['price'] ?? 0).toDouble(),
       schedule: Map<String, Map<String, dynamic>>.from(data['schedule'] ?? {}),
       imageUrl: data['imageUrl'],
+      managerId: data['managerId'] ?? '',
+      phone: data['phone'],
     );
   }
 }

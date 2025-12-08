@@ -114,7 +114,7 @@ class LoginPage extends ConsumerWidget {
                     builder: (context, value, child) {
                       return Transform.translate(
                         offset: Offset(0, 20 * (1 - value)),
-                        child: Opacity(
+                        child: Opacity( 
                           opacity: value,
                           child: child,
                         ),

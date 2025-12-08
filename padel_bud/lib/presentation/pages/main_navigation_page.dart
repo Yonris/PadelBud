@@ -8,6 +8,7 @@ import 'package:padel_bud/presentation/pages/add_court_page.dart';
 import 'package:padel_bud/presentation/pages/club_manager_dashboard_page.dart';
 import 'package:padel_bud/providers/providers.dart';
 import 'package:padel_bud/core/app_localizations.dart';
+
 class MainNavigationPage extends ConsumerStatefulWidget {
   const MainNavigationPage({Key? key}) : super(key: key);
 
@@ -21,11 +22,8 @@ class _MainNavigationPageState extends ConsumerState<MainNavigationPage> {
   List<Widget> _getPages(UserRole role) {
     if (role == UserRole.courtManager) {
       return <Widget>[
-        const EditProfilePage(),
         const AddCourtPage(),
         const ClubManagerDashboardPage(),
-        const HomePage(),
-        const BuddiesPage(),
       ];
     }
     return <Widget>[
@@ -35,15 +33,13 @@ class _MainNavigationPageState extends ConsumerState<MainNavigationPage> {
     ];
   }
 
-  List<BottomNavigationBarItem> _getNavItems(UserRole role, BuildContext context) {
+  List<BottomNavigationBarItem> _getNavItems(
+    UserRole role,
+    BuildContext context,
+  ) {
     final loc = AppLocalizations.of(context);
     if (role == UserRole.courtManager) {
       return <BottomNavigationBarItem>[
-        BottomNavigationBarItem(
-          icon: const Icon(Icons.person_outline),
-          activeIcon: const Icon(Icons.person),
-          label: loc.profile,
-        ),
         BottomNavigationBarItem(
           icon: const Icon(Icons.add_business_outlined),
           activeIcon: const Icon(Icons.add_business),
@@ -53,16 +49,6 @@ class _MainNavigationPageState extends ConsumerState<MainNavigationPage> {
           icon: const Icon(Icons.calendar_today_outlined),
           activeIcon: const Icon(Icons.calendar_today),
           label: loc.schedule,
-        ),
-        BottomNavigationBarItem(
-          icon: const Icon(Icons.home_outlined),
-          activeIcon: const Icon(Icons.home),
-          label: loc.home,
-        ),
-        BottomNavigationBarItem(
-          icon: const Icon(Icons.group_outlined),
-          activeIcon: const Icon(Icons.group),
-          label: loc.buddies,
         ),
       ];
     }

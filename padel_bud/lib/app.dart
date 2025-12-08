@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:padel_bud/core/theme.dart';
+import 'package:padel_bud/presentation/pages/home_page.dart';
 import 'package:padel_bud/presentation/pages/main_navigation_page.dart';
+import 'package:padel_bud/presentation/pages/phone_input_page.dart';
 import 'package:padel_bud/presentation/pages/role_selection_page.dart';
 import 'package:padel_bud/providers/providers.dart';
 import 'package:padel_bud/presentation/pages/login_page.dart';
@@ -13,6 +16,9 @@ class MyApp extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    // Initialize location provider on app start, even before login
+    ref.watch(locationProvider);
+    
     final auth = ref.watch(authProvider);
     final locale = ref.watch(localeProvider);
 
@@ -30,6 +36,7 @@ class MyApp extends ConsumerWidget {
           Locale('en'),
           Locale('he'),
         ],
+        theme: AppTheme.lightTheme,
         home: const Scaffold(body: Center(child: CircularProgressIndicator())),
       );
     }
@@ -50,7 +57,7 @@ class MyApp extends ConsumerWidget {
           Locale('he'),
         ],
         title: 'PadelBud',
-        theme: ThemeData(primarySwatch: Colors.blue),
+        theme: AppTheme.lightTheme,
         home: const LoginPage(),
       );
     }
@@ -71,6 +78,7 @@ class MyApp extends ConsumerWidget {
           Locale('en'),
           Locale('he'),
         ],
+        theme: AppTheme.lightTheme,
         home: const Scaffold(body: Center(child: CircularProgressIndicator())),
       );
     }
@@ -90,8 +98,8 @@ class MyApp extends ConsumerWidget {
           Locale('he'),
         ],
         title: 'PadelBud',
-        theme: ThemeData(primarySwatch: Colors.blue),
-        home: const RoleSelectionPage(),
+        theme: AppTheme.lightTheme,
+        home: const MainNavigationPage(),
       );
     }
 
@@ -109,7 +117,7 @@ class MyApp extends ConsumerWidget {
         Locale('he'),
       ],
       title: 'PadelBud',
-      theme: ThemeData(primarySwatch: Colors.green),
+      theme: AppTheme.lightTheme,
       home: const MainNavigationPage(),
     );
   }

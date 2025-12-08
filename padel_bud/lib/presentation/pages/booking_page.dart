@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:padel_bud/core/payment_service.dart';
 import 'package:padel_bud/core/app_localizations.dart';
+import 'package:padel_bud/core/utils/currency_utils.dart';
 import 'package:padel_bud/presentation/widgets/payment_dialog.dart';
 import 'package:padel_bud/presentation/widgets/slot_card.dart';
 import 'package:padel_bud/repositories/time_slot_repository.dart';
@@ -26,6 +27,7 @@ class _BookingPageState extends State<BookingPage> {
 
   List<TimeSlotModel> _allSlots = [];
   bool _loading = true;
+  bool _hasLoaded = false;
 
   @override
   void initState() {
@@ -34,14 +36,19 @@ class _BookingPageState extends State<BookingPage> {
   }
 
   Future<void> _loadSlotsOnce() async {
+    if (_hasLoaded) return;
+    _hasLoaded = true;
+
     final slots = await TimeSlotRepository().getTimeSlotsForClub(
       clubId: widget.club.id,
     );
 
-    setState(() {
-      _allSlots = slots;
-      _loading = false;
-    });
+    if (mounted) {
+      setState(() {
+        _allSlots = slots;
+        _loading = false;
+      });
+    }
   }
 
   List<TimeSlotModel> _getSlotsForCurrentDay() {
@@ -96,7 +103,7 @@ class _BookingPageState extends State<BookingPage> {
       builder: (context) => PaymentDialog(
         productId: PaymentService.courtBookingProductId,
         amount:
-            '${widget.club.price.toStringAsFixed(0)} ${widget.club.currency}',
+            '${widget.club.price.toStringAsFixed(0)} ${CurrencyUtils.getSymbol(widget.club.currency)}',
         description:
             AppLocalizations.of(context).book + widget.club.name,
         startTime:
@@ -144,20 +151,43 @@ class _BookingPageState extends State<BookingPage> {
 
       appBar: AppBar(
         elevation: 0,
-        backgroundColor: Colors.green.shade600,
-        title: Row(
-          children: [
-            Expanded(
-              child: Text(
-                "${AppLocalizations.of(context).book} ${widget.club.name}",
-                style: const TextStyle(
-                  fontWeight: FontWeight.bold,
-                  fontSize: 18,
-                ),
-                overflow: TextOverflow.ellipsis,
+        centerTitle: false,
+        backgroundColor: Colors.transparent,
+        flexibleSpace: Container(
+          decoration: const BoxDecoration(
+            gradient: LinearGradient(
+              colors: [Color(0xFF2E7D32), Color(0xFF66BB6A)],
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+            ),
+            borderRadius: BorderRadius.vertical(bottom: Radius.circular(28)),
+            boxShadow: [
+              BoxShadow(
+                blurRadius: 10,
+                color: Colors.black26,
+                offset: Offset(0, 3),
+              ),
+            ],
+          ),
+        ),
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back_ios, color: Colors.white),
+          onPressed: () => Navigator.of(context).pop(),
+        ),
+        title: Padding(
+          padding: const EdgeInsets.only(left: 8),
+          child: FittedBox(
+            fit: BoxFit.scaleDown,
+            alignment: Alignment.centerLeft,
+            child: Text(
+              "${AppLocalizations.of(context).book} ${widget.club.name}",
+              style: const TextStyle(
+                fontWeight: FontWeight.bold,
+                color: Colors.white,
+                fontSize: 28,
               ),
             ),
-          ],
+          ),
         ),
       ),
 

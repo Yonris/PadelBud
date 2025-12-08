@@ -31,4 +31,8 @@ class MatchesRepository {
     final userIds = List<String>.from(snap.data()?['userIds'] ?? []);
     return userIds;
   }
+
+  Future<void> deleteMatch({required String matchId}) async {
+    await _db.doc(matchId).delete();
+  }
 }

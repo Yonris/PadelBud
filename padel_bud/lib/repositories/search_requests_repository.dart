@@ -11,4 +11,14 @@ class SearchRequestsRepository {
   Future<void> deleteSearchRequest(String id) async {
     await _db.doc(id).delete();
   }
+
+  Future<void> setSearchRequestAvailable(String id, bool available) async {
+    await _db.doc(id).update({'available': available});
+  }
+
+  Future<String?> getSearchRequestIdForUser(String userId) async {
+    final snap = await _db.where('userId', isEqualTo: userId).get();
+    if (snap.docs.isEmpty) return null;
+    return snap.docs.first.id;
+  }
 }

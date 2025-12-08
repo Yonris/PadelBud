@@ -5,18 +5,21 @@ class CourtModel {
   final String name;
   final String clubId;
   final int courtNumber;
+  final String managerId;
 
   CourtModel({
     required this.id,
     required this.name,
     required this.clubId,
     required this.courtNumber,
+    required this.managerId,
   });
 
   Map<String, dynamic> toJson() => {
     'name': name,
     'clubId': clubId,
     'courtNumber': courtNumber,
+    'managerId': managerId,
   };
   
   factory CourtModel.fromDocument(DocumentSnapshot doc) {
@@ -26,6 +29,7 @@ class CourtModel {
       name: data['name'] ?? '',
       clubId: data['clubId'] ?? '',
       courtNumber: data['courtNumber'] ?? 1,
+      managerId: data['managerId'] ?? '',
     );
   }
 }

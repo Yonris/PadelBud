@@ -52,7 +52,7 @@ class DefaultFirebaseOptions {
 
   static const FirebaseOptions android = FirebaseOptions(
     apiKey: 'AIzaSyBk1jXVtTNw0mWVpPLPI7Zct7Ua-1Js6mg',
-    appId: '1:92444002158:android:0ef07e970f865de6ff637f',
+    appId: '1:92444002158:android:3eade7d40816ea1dff637f',
     messagingSenderId: '92444002158',
     projectId: 'padelbud-99086',
     storageBucket: 'padelbud-99086.firebasestorage.app',
@@ -60,19 +60,23 @@ class DefaultFirebaseOptions {
 
   static const FirebaseOptions ios = FirebaseOptions(
     apiKey: 'AIzaSyBmTeuq-ibNZ8BBCeCurmJSU7jSx7ak1hA',
-    appId: '1:92444002158:ios:06493a9600ba60eaff637f',
+    appId: '1:92444002158:ios:c59d9b4c1471b85bff637f',
     messagingSenderId: '92444002158',
     projectId: 'padelbud-99086',
     storageBucket: 'padelbud-99086.firebasestorage.app',
+    androidClientId: '92444002158-g5jjt6up4vla0fpubt8idg5763mivcia.apps.googleusercontent.com',
+    iosClientId: '92444002158-bkmfollc7sbstc52t7esaomha27mk6iq.apps.googleusercontent.com',
     iosBundleId: 'com.buddies.padelBud',
   );
 
   static const FirebaseOptions macos = FirebaseOptions(
     apiKey: 'AIzaSyBmTeuq-ibNZ8BBCeCurmJSU7jSx7ak1hA',
-    appId: '1:92444002158:ios:06493a9600ba60eaff637f',
+    appId: '1:92444002158:ios:c59d9b4c1471b85bff637f',
     messagingSenderId: '92444002158',
     projectId: 'padelbud-99086',
     storageBucket: 'padelbud-99086.firebasestorage.app',
+    androidClientId: '92444002158-g5jjt6up4vla0fpubt8idg5763mivcia.apps.googleusercontent.com',
+    iosClientId: '92444002158-bkmfollc7sbstc52t7esaomha27mk6iq.apps.googleusercontent.com',
     iosBundleId: 'com.buddies.padelBud',
   );
 
@@ -85,4 +89,5 @@ class DefaultFirebaseOptions {
     storageBucket: 'padelbud-99086.firebasestorage.app',
     measurementId: 'G-EQLXT4N0V9',
   );
+
 }

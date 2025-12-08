@@ -1,19 +1,22 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:padel_bud/presentation/widgets/club_image_widget.dart';
 import 'package:padel_bud/core/app_localizations.dart';
+import 'package:padel_bud/core/utils/currency_utils.dart';
+import 'package:padel_bud/providers/providers.dart';
 import '../../models/club_model.dart';
 import '../../repositories/club_repository.dart';
 import 'club_manager_court_schedule_page.dart';
 
-class ClubManagerDashboardPage extends StatefulWidget {
+class ClubManagerDashboardPage extends ConsumerStatefulWidget {
   const ClubManagerDashboardPage({Key? key}) : super(key: key);
 
   @override
-  State<ClubManagerDashboardPage> createState() =>
+  ConsumerState<ClubManagerDashboardPage> createState() =>
       _ClubManagerDashboardPageState();
 }
 
-class _ClubManagerDashboardPageState extends State<ClubManagerDashboardPage> {
+class _ClubManagerDashboardPageState extends ConsumerState<ClubManagerDashboardPage> {
   List<ClubModel> _clubs = [];
   bool _loading = true;
 
@@ -25,18 +28,49 @@ class _ClubManagerDashboardPageState extends State<ClubManagerDashboardPage> {
 
   Future<void> _loadClubs() async {
     try {
-      final clubs = await ClubRepository().getClubs();
-      setState(() {
-        _clubs = clubs;
-        _loading = false;
-      });
+      final userId = ref.read(authProvider).user?.uid;
+      if (userId == null) {
+        setState(() => _loading = false);
+        return;
+      }
+      final clubs = await ClubRepository().getClubsByManager(userId);
+      
+      // Preload club images
+      if (mounted) {
+        await _preloadClubImages(clubs);
+      }
+      
+      if (mounted) {
+        setState(() {
+          _clubs = clubs;
+          _loading = false;
+        });
+      }
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('${AppLocalizations.of(context).error}: $e')),
-      );
-      setState(() => _loading = false);
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('${AppLocalizations.of(context).error}: $e')),
+        );
+        setState(() => _loading = false);
+      }
     }
   }
+
+  Future<void> _preloadClubImages(List<ClubModel> clubs) async {
+    for (final club in clubs) {
+      if (club.imageUrl != null && club.imageUrl!.isNotEmpty) {
+        try {
+          await precacheImage(
+            NetworkImage(club.imageUrl!),
+            context,
+          );
+        } catch (e) {
+          print('DEBUG: Error preloading image for ${club.name}: $e');
+        }
+      }
+    }
+  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -194,10 +228,54 @@ class _ClubManagerDashboardPageState extends State<ClubManagerDashboardPage> {
                       color: Colors.orange,
                     ),
                     const SizedBox(width: 8),
-                    _buildInfoChip(
-                      icon: Icons.attach_money,
-                      label: '${club.price.toStringAsFixed(0)} ${club.currency}',
-                      color: Colors.green,
+                    Expanded(
+                      child: Material(
+                        color: Colors.transparent,
+                        child: InkWell(
+                          borderRadius: BorderRadius.circular(8),
+                          child: Container(
+                            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                            decoration: BoxDecoration(
+                              color: Colors.green.withOpacity(0.1),
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            child: Row(
+                              mainAxisSize: MainAxisSize.max,
+                              mainAxisAlignment: MainAxisAlignment.start,
+                              children: [
+                                SizedBox(
+                                  width: 20,
+                                  height: 20,
+                                  child: FittedBox(
+                                    fit: BoxFit.scaleDown,
+                                    child: Text(
+                                      CurrencyUtils.getSymbol(club.currency),
+                                      style: const TextStyle(
+                                        fontSize: 14,
+                                        fontWeight: FontWeight.w600,
+                                        color: Colors.green,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                                const SizedBox(width: 4),
+                                Expanded(
+                                  child: Text(
+                                    '${club.price.toStringAsFixed(0)}',
+                                    style: const TextStyle(
+                                      fontSize: 12,
+                                      fontWeight: FontWeight.w600,
+                                      color: Colors.green,
+                                    ),
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ),
                     ),
                   ],
                 ),
@@ -231,7 +309,8 @@ class _ClubManagerDashboardPageState extends State<ClubManagerDashboardPage> {
           borderRadius: BorderRadius.circular(8),
         ),
         child: Row(
-          mainAxisSize: MainAxisSize.min,
+          mainAxisSize: MainAxisSize.max,
+          mainAxisAlignment: MainAxisAlignment.start,
           children: [
             Icon(icon, size: 16, color: color),
             const SizedBox(width: 4),

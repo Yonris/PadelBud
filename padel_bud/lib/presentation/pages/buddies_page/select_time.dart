@@ -156,7 +156,7 @@ class _SelectTimePageState extends ConsumerState<SelectTimePage> {
             color: Colors.black87,
           ),
         ),
-        trailing: const Icon(Icons.arrow_forward_ios, color: Color(0xFF1E88E5)),
+        trailing: const Icon(Icons.arrow_forward_ios, color: Color(0xFF2E7D32)),
         onTap: pickDate,
       ),
     );

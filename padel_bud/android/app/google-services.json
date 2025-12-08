@@ -7,12 +7,25 @@
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:92444002158:android:0ef07e970f865de6ff637f",
+        "mobilesdk_app_id": "1:92444002158:android:3eade7d40816ea1dff637f",
         "android_client_info": {
           "package_name": "com.buddies.padel_bud"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "92444002158-6l1j281ajbokooi6j6hf3pf2pq76r77g.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.buddies.padel_bud",
+            "certificate_hash": "82e506e1d34ff84db86003cb25cdb5c28a5a50aa"
+          }
+        },
+        {
+          "client_id": "92444002158-seu1qc4qpg8qma6au769k4p806bk6d1j.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
           "current_key": "AIzaSyBk1jXVtTNw0mWVpPLPI7Zct7Ua-1Js6mg"
@@ -20,7 +33,19 @@
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "92444002158-seu1qc4qpg8qma6au769k4p806bk6d1j.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "92444002158-aipcqsfer0k5e4afmh08rva61orh9qo3.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.padelBud"
+              }
+            }
+          ]
         }
       }
     }

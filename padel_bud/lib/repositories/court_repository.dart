@@ -11,6 +11,13 @@ class CourtRepository {
         .toList();
   }
 
+  Future<List<CourtModel>> getCourtsByManager(String managerId) async {
+    final snap = await _db.where('managerId', isEqualTo: managerId).get();
+    return snap.docs
+        .map((d) => CourtModel.fromDocument(d))
+        .toList();
+  }
+
   Future<String> addCourt(CourtModel court) async {
     final docRef = await _db.add(court.toJson());
     return docRef.id;

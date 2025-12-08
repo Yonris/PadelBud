@@ -6,7 +6,7 @@ class TimeSlotModel {
   final DateTime end;
   final String courtId;
   final int buddies;
-  final double price;
+  double price;
   bool available;
 
   TimeSlotModel({

@@ -44,27 +44,44 @@ class AuthNotifier extends Notifier<AuthState> {
   }
 
   Future<void> sendPhoneVerification(String phone) async {
-    state = state.copyWith(isLoading: true, error: null);
+    print('[Auth] sendPhoneVerification called with phone: $phone');
+    state = state.copyWith(isLoading: true, error: null, codeSent: false, verificationId: null);
 
-    await _auth.verifyPhoneNumber(
-      phoneNumber: phone,
-      verificationCompleted: (credential) async {
-        await _auth.signInWithCredential(credential);
-        await _createUserIfNew(_auth.currentUser);
-        state = state.copyWith(isLoading: false, user: _auth.currentUser);
-      },
-      verificationFailed: (e) {
-        state = state.copyWith(isLoading: false, error: e.message);
-      },
-      codeSent: (verificationId, _) {
-        state = state.copyWith(
-          isLoading: false,
-          codeSent: true,
-          verificationId: verificationId,
-        );
-      },
-      codeAutoRetrievalTimeout: (_) {},
-    );
+    try {
+      print('[Auth] Calling verifyPhoneNumber...');
+      await _auth.verifyPhoneNumber(
+        phoneNumber: phone,
+        verificationCompleted: (credential) async {
+          print('[Auth] Verification completed automatically');
+          await _auth.signInWithCredential(credential);
+          await _createUserIfNew(_auth.currentUser);
+          state = state.copyWith(isLoading: false, user: _auth.currentUser);
+        },
+        verificationFailed: (e) {
+          print('[Auth] Verification failed: ${e.message}');
+          state = state.copyWith(isLoading: false, error: e.message, codeSent: false, verificationId: null);
+        },
+        codeSent: (verificationId, _) {
+          print('[Auth] Code sent successfully with verificationId: $verificationId');
+          state = state.copyWith(
+            isLoading: false,
+            codeSent: true,
+            verificationId: verificationId,
+          );
+        },
+        codeAutoRetrievalTimeout: (verificationId) {
+          print('[Auth] Code auto-retrieval timed out with verificationId: $verificationId');
+          state = state.copyWith(
+            isLoading: false,
+            codeSent: true,
+            verificationId: verificationId,
+          );
+        },
+      );
+    } catch (e) {
+      print('[Auth] Exception in verifyPhoneNumber: $e');
+      state = state.copyWith(isLoading: false, error: e.toString(), codeSent: false, verificationId: null);
+    }
   }
 
   Future<void> verifySmsCode(String smsCode) async {
@@ -79,11 +96,19 @@ class AuthNotifier extends Notifier<AuthState> {
       );
 
       await _auth.signInWithCredential(credential);
-      await _createUserIfNew(_auth.currentUser);
+      
+      // Create user without blocking the UI - do it in background
+      _createUserIfNew(_auth.currentUser);
+      
       state = state.copyWith(isLoading: false, user: _auth.currentUser);
     } catch (e) {
+      print('[Auth] Error in verifySmsCode: $e');
       state = state.copyWith(isLoading: false, error: e.toString());
     }
+  }
+
+  void resetVerification() {
+    state = state.copyWith(codeSent: false, verificationId: null, error: null);
   }
 
   Future<void> _createUserIfNew(User? user) async {

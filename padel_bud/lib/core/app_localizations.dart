@@ -334,6 +334,28 @@ abstract class AppLocalizations {
 
   String get available;
 
+  // Price Management
+  String get editPrice;
+  String get enterValidPrice;
+  String get priceUpdated;
+  String get willUpdateAllSlots;
+  String get update;
+
+  // Currency Management
+  String get changeCurrency;
+  String get currencyUpdated;
+  String get selectCurrency;
+  
+  // Court Schedule Page
+  String get clubDetails;
+  String get courtSchedule;
+  String get editClubDetails;
+  String get setPricesForCourts;
+  String get currentPrice;
+  String get noCourtsFound;
+  String get currency;
+  String get pricing;
+
 }
 
 class AppLocalizationsEn extends AppLocalizations {
@@ -943,6 +965,44 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get book => 'Book';
 
+  // Price Management
+  @override
+  String get editPrice => 'Edit Price';
+  @override
+  String get enterValidPrice => 'Please enter a valid price';
+  @override
+  String get priceUpdated => 'Price updated successfully';
+  @override
+  String get willUpdateAllSlots => 'This will update the price for all time slots of this court';
+  @override
+  String get update => 'Update';
+
+  // Currency Management
+  @override
+  String get changeCurrency => 'Change Currency';
+  @override
+  String get currencyUpdated => 'Currency updated successfully';
+  @override
+  String get selectCurrency => 'Select Currency';
+
+  // Court Schedule Page
+  @override
+  String get clubDetails => 'Club Details';
+  @override
+  String get courtSchedule => 'Court Schedule';
+  @override
+  String get editClubDetails => 'Edit Club Details';
+  @override
+  String get setPricesForCourts => 'Set prices for your courts';
+  @override
+  String get currentPrice => 'Current Price';
+  @override
+  String get noCourtsFound => 'No courts found';
+  @override
+  String get currency => 'Currency';
+  @override
+  String get pricing => 'Pricing';
+
 }
 
 class AppLocalizationsHe extends AppLocalizations {
@@ -1549,4 +1609,42 @@ class AppLocalizationsHe extends AppLocalizations {
   String get booked => 'מוזמן';
   @override
   String get book => 'הזמן';
+
+  // Price Management
+  @override
+  String get editPrice => 'עריכת מחיר';
+  @override
+  String get enterValidPrice => 'אנא הזן מחיר תקף';
+  @override
+  String get priceUpdated => 'המחיר עודכן בהצלחה';
+  @override
+  String get willUpdateAllSlots => 'פעולה זו תעדכן את המחיר לכל משבצות הזמן של המגרש הזה';
+  @override
+  String get update => 'עדכן';
+
+  // Currency Management
+  @override
+  String get changeCurrency => 'שינוי מטבע';
+  @override
+  String get currencyUpdated => 'המטבע עודכן בהצלחה';
+  @override
+  String get selectCurrency => 'בחר מטבע';
+
+  // Court Schedule Page
+  @override
+  String get clubDetails => 'פרטי המועדון';
+  @override
+  String get courtSchedule => 'לוח זמנים של המגרשים';
+  @override
+  String get editClubDetails => 'עריכת פרטי המועדון';
+  @override
+  String get setPricesForCourts => 'הגדר מחירים למגרשים שלך';
+  @override
+  String get currentPrice => 'מחיר נוכחי';
+  @override
+  String get noCourtsFound => 'לא נמצאו מגרשים';
+  @override
+  String get currency => 'מטבע';
+  @override
+  String get pricing => 'תמחור';
 }

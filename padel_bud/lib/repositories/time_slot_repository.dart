@@ -54,4 +54,19 @@ class TimeSlotRepository {
   Future<void> markTimeSlotAsBooked(String timeSlotId) async {
     await _db.doc(timeSlotId).update({'available': false});
   }
+
+  Future<void> setTimeSlotAvailable(String timeSlotId) async {
+    await _db.doc(timeSlotId).update({'available': true});
+  }
+
+  Future<void> updateCourtPrices(String courtId, double newPrice) async {
+    final snap = await _db.where('courtId', isEqualTo: courtId).get();
+    final batch = FirebaseFirestore.instance.batch();
+    
+    for (final doc in snap.docs) {
+      batch.update(doc.reference, {'price': newPrice});
+    }
+    
+    await batch.commit();
+  }
 }

@@ -69,6 +69,21 @@ class _HomePageState extends ConsumerState<HomePage> {
         );
   }
 
+  Future<void> _preloadClubImages(List<ClubModel> clubs) async {
+    for (final club in clubs) {
+      if (club.imageUrl != null && club.imageUrl!.isNotEmpty) {
+        try {
+          await precacheImage(
+            NetworkImage(club.imageUrl!),
+            context,
+          );
+        } catch (e) {
+          print('DEBUG: Error preloading image for ${club.name}: $e');
+        }
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     ref.listen<LocationState>(locationProvider, (prev, next) {
@@ -196,7 +211,6 @@ class _HomePageState extends ConsumerState<HomePage> {
           }
 
           final allClubs = snapshot.data ?? [];
-
           final clubs = getFilteredAndSortedClubs(allClubs, userLocation);
 
           if (clubs.isEmpty) {
@@ -222,29 +236,41 @@ class _HomePageState extends ConsumerState<HomePage> {
             );
           }
 
-          return RefreshIndicator(
-            color: Colors.green,
-            onRefresh: _refreshCourts,
-            child: ListView.builder(
-              padding: const EdgeInsets.all(16),
-              itemCount: clubs.length,
-              itemBuilder: (ctx, i) {
-                return TweenAnimationBuilder(
-                  duration: Duration(milliseconds: 350 + (i * 80)),
-                  tween: Tween<double>(begin: 0, end: 1),
-                  builder: (context, value, child) {
-                    return Opacity(
-                      opacity: value,
-                      child: Transform.translate(
-                        offset: Offset(0, 20 * (1 - value)),
-                        child: child,
-                      ),
+          // Preload club images before displaying
+          return FutureBuilder<void>(
+            future: _preloadClubImages(clubs),
+            builder: (context, preloadSnapshot) {
+              if (preloadSnapshot.connectionState == ConnectionState.waiting) {
+                return const Center(
+                  child: CircularProgressIndicator(color: Colors.green),
+                );
+              }
+
+              return RefreshIndicator(
+                color: Colors.green,
+                onRefresh: _refreshCourts,
+                child: ListView.builder(
+                  padding: const EdgeInsets.all(16),
+                  itemCount: clubs.length,
+                  itemBuilder: (ctx, i) {
+                    return TweenAnimationBuilder(
+                      duration: Duration(milliseconds: 350 + (i * 80)),
+                      tween: Tween<double>(begin: 0, end: 1),
+                      builder: (context, value, child) {
+                        return Opacity(
+                          opacity: value,
+                          child: Transform.translate(
+                            offset: Offset(0, 20 * (1 - value)),
+                            child: child,
+                          ),
+                        );
+                      },
+                      child: CourtCard(club: clubs[i], userLocation: userLocation),
                     );
                   },
-                  child: CourtCard(club: clubs[i], userLocation: userLocation),
-                );
-              },
-            ),
+                ),
+              );
+            },
           );
         },
       ),

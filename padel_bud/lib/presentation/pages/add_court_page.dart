@@ -7,6 +7,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:padel_bud/providers/providers.dart';
 import 'package:padel_bud/core/app_localizations.dart';
+import 'package:padel_bud/core/utils/currency_utils.dart';
 import '../../models/court_model.dart';
 import '../../models/club_model.dart';
 import '../../repositories/court_repository.dart';
@@ -38,13 +39,13 @@ class _AddCourtPageState extends ConsumerState<AddCourtPage> {
   final _formKey = GlobalKey<FormState>();
   final _clubNameController = TextEditingController();
   final _addressController = TextEditingController();
+  final _phoneController = TextEditingController();
   final _priceController = TextEditingController(text: '150');
   final _numCourtsController = TextEditingController();
   int _gameDuration = 60;
   double _price = 50.0;
   String _currency = 'ILS';
   bool _isLoading = false;
-  int _numCourts = 1;
   String? _clubImagePath;
 
   final Map<String, DaySchedule> _weekSchedule = {
@@ -124,6 +125,7 @@ class _AddCourtPageState extends ConsumerState<AddCourtPage> {
       final numCourts = int.tryParse(_numCourtsController.text) ?? 1;
 
       // Create the club
+      final userId = ref.read(authProvider).user?.uid ?? '';
       final club = ClubModel(
         id: '',
         name: _clubNameController.text.trim(),
@@ -141,6 +143,8 @@ class _AddCourtPageState extends ConsumerState<AddCourtPage> {
           }),
         ),
         imageUrl: clubImageUrl,
+        managerId: userId,
+        phone: _phoneController.text.trim().isEmpty ? null : _phoneController.text.trim(),
       );
 
       final clubId = await ClubRepository().addClub(club);
@@ -153,6 +157,7 @@ class _AddCourtPageState extends ConsumerState<AddCourtPage> {
           name: 'Court $c',
           clubId: clubId,
           courtNumber: c,
+          managerId: userId,
         );
 
         final courtId = await CourtRepository().addCourt(court);
@@ -226,10 +231,10 @@ class _AddCourtPageState extends ConsumerState<AddCourtPage> {
 
       _clubNameController.clear();
       _addressController.clear();
+      _phoneController.clear();
       _priceController.text = '50';
       _numCourtsController.text = '1';
       _price = 50.0;
-      _numCourts = 1;
       _weekSchedule.forEach((_, sched) {
         sched.closed = false;
         sched.start = null;
@@ -323,10 +328,13 @@ class _AddCourtPageState extends ConsumerState<AddCourtPage> {
     }
   }
 
+
+
   @override
   void dispose() {
     _clubNameController.dispose();
     _addressController.dispose();
+    _phoneController.dispose();
     _priceController.dispose();
     _numCourtsController.dispose();
     super.dispose();
@@ -390,6 +398,12 @@ class _AddCourtPageState extends ConsumerState<AddCourtPage> {
                 controller: _addressController,
                 label: AppLocalizations.of(context).clubAddress,
                 icon: Icons.location_on_outlined,
+              ),
+              const SizedBox(height: 14),
+              _buildFormField(
+                controller: _phoneController,
+                label: AppLocalizations.of(context).clubPhone,
+                icon: Icons.phone_outlined,
               ),
               const SizedBox(height: 16),
               _buildFormField(
@@ -819,7 +833,7 @@ class _AddCourtPageState extends ConsumerState<AddCourtPage> {
         Row(
           children: [
             Expanded(
-              flex: 2,
+              flex: 3,
               child: Container(
                 decoration: BoxDecoration(
                   color: Colors.white,
@@ -839,10 +853,6 @@ class _AddCourtPageState extends ConsumerState<AddCourtPage> {
                   ),
                   decoration: InputDecoration(
                     hintText: 'Enter price',
-                    prefixIcon: const Icon(
-                      Icons.attach_money,
-                      color: Color(0xFF2E7D32),
-                    ),
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(16),
                       borderSide: BorderSide.none,
@@ -878,6 +888,7 @@ class _AddCourtPageState extends ConsumerState<AddCourtPage> {
             ),
             const SizedBox(width: 12),
             Expanded(
+              flex: 2,
               child: Container(
                 decoration: BoxDecoration(
                   color: Colors.white,
@@ -894,10 +905,7 @@ class _AddCourtPageState extends ConsumerState<AddCourtPage> {
                   value: _currency,
                   isExpanded: true,
                   decoration: InputDecoration(
-                    prefixIcon: const Icon(
-                      Icons.currency_exchange,
-                      color: Color(0xFF1E88E5),
-                    ),
+                    prefixIcon: CurrencyUtils.getCurrencyIcon(_currency),
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(16),
                       borderSide: BorderSide.none,
@@ -906,9 +914,10 @@ class _AddCourtPageState extends ConsumerState<AddCourtPage> {
                     fillColor: Colors.white,
                     contentPadding: const EdgeInsets.symmetric(
                       vertical: 16,
-                      horizontal: 12,
+                      horizontal: 8,
                     ),
                   ),
+                  isDense: true,
                   items:
                       ['ILS', 'USD', 'EUR', 'GBP', 'JPY', 'AUD', 'CAD', 'CHF']
                           .map(

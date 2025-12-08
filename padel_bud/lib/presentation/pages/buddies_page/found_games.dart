@@ -8,11 +8,12 @@ import 'package:padel_bud/models/user_model.dart';
 import 'package:padel_bud/presentation/widgets/payment_dialog.dart';
 import 'package:padel_bud/presentation/widgets/club_image_widget.dart';
 import 'package:padel_bud/providers/providers.dart';
-import 'package:padel_bud/providers/user_provider.dart';
 import 'package:padel_bud/repositories/matches_repository.dart';
 import 'package:padel_bud/repositories/user_repository.dart';
 import 'package:padel_bud/repositories/court_repository.dart';
 import 'package:padel_bud/repositories/club_repository.dart';
+import 'package:padel_bud/repositories/search_requests_repository.dart';
+import 'package:padel_bud/repositories/time_slot_repository.dart';
 
 class FoundMatchPage extends ConsumerWidget {
   const FoundMatchPage({super.key});
@@ -75,224 +76,25 @@ class FoundMatchPage extends ConsumerWidget {
             return Center(child: Text(AppLocalizations.of(context).noMatchFound));
           }
 
-          final slot = matchInfo['timeSlot'] as TimeSlotModel?;
-          final club = matchInfo['club'] as ClubModel?;
           final users = matchInfo['users'] as List<UserModel>?;
-          final currentUserId = ref.read(authProvider).user?.uid;
-
-          if (slot == null) {
-            return Center(child: Text(AppLocalizations.of(context).noMatchFound));
+          
+          // Ensure all user profile images are loaded before rendering
+          if (users != null && users.isNotEmpty) {
+            return FutureBuilder<void>(
+              future: _preloadUserImages(context, users),
+              builder: (context, preloadSnapshot) {
+                if (preloadSnapshot.connectionState == ConnectionState.waiting) {
+                  return const Center(child: CircularProgressIndicator());
+                }
+                return _buildMatchContent(context, ref, matchInfo);
+              },
+            );
           }
-
-          final timeLabel =
-              "${slot.start.hour.toString().padLeft(2, '0')}:${slot.start.minute.toString().padLeft(2, '0')} - "
-              "${slot.end.hour.toString().padLeft(2, '0')}:${slot.end.minute.toString().padLeft(2, '0')}";
-
-          return SafeArea(
-            child: Column(
-              children: [
-                Expanded(
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-                    child: Column(
-                      children: [
-                        Container(
-                          decoration: BoxDecoration(
-                            color: Colors.white,
-                            borderRadius: BorderRadius.circular(16),
-                            boxShadow: [
-                              BoxShadow(
-                                color: Colors.black.withOpacity(0.08),
-                                blurRadius: 12,
-                                offset: const Offset(0, 2),
-                              ),
-                            ],
-                          ),
-                          padding: const EdgeInsets.all(20),
-                          child: Column(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              // Time
-                              Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  const Icon(
-                                    Icons.access_time,
-                                    color: Color(0xFF2E7D32),
-                                    size: 28,
-                                  ),
-                                  const SizedBox(width: 12),
-                                  Text(
-                                    timeLabel,
-                                    style: const TextStyle(
-                                      fontSize: 22,
-                                      fontWeight: FontWeight.bold,
-                                      color: Colors.black87,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                              const SizedBox(height: 18),
-                              // Location with Club Image
-                              if (club != null)
-                                Column(
-                                  children: [
-                                    ClubImageWidget(
-                                      club: club,
-                                      width: 80,
-                                      height: 80,
-                                      borderRadius: 14,
-                                    ),
-                                    const SizedBox(height: 14),
-                                    Text(
-                                      club.name,
-                                      style: const TextStyle(
-                                        fontSize: 18,
-                                        fontWeight: FontWeight.bold,
-                                        color: Colors.black87,
-                                      ),
-                                      textAlign: TextAlign.center,
-                                      maxLines: 2,
-                                      overflow: TextOverflow.ellipsis,
-                                    ),
-                                  ],
-                                ),
-                              const SizedBox(height: 18),
-                              Container(
-                                height: 1.5,
-                                color: Colors.grey.shade200,
-                              ),
-                              const SizedBox(height: 16),
-                              Text(
-                                AppLocalizations.of(context).players,
-                                style: const TextStyle(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.w600,
-                                  color: Colors.grey,
-                                ),
-                              ),
-                              const SizedBox(height: 14),
-                              if (users != null && users.isNotEmpty)
-                                Column(
-                                  children: [
-                                    Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.center,
-                                      children: [
-                                        for (int i = 0; i < 2 && i < users.length; i++) ...[
-                                          _buildPlayerAvatar(
-                                            user: users[i],
-                                            isCurrentUser:
-                                                users[i].id == currentUserId,
-                                          ),
-                                          if (i == 0)
-                                            const SizedBox(width: 24),
-                                        ],
-                                      ],
-                                    ),
-                                    if (users.length > 2) ...[
-                                      const SizedBox(height: 16),
-                                      Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.center,
-                                        children: [
-                                          for (int i = 2; i < 4 && i < users.length; i++) ...[
-                                            _buildPlayerAvatar(
-                                              user: users[i],
-                                              isCurrentUser:
-                                                  users[i].id == currentUserId,
-                                            ),
-                                            if (i == 2)
-                                              const SizedBox(width: 24),
-                                          ],
-                                        ],
-                                      ),
-                                    ],
-                                  ],
-                                )
-                              else
-                                Text(AppLocalizations.of(context).noPlayersFound, style: const TextStyle(fontSize: 12)),
-                            ],
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-                // Buttons at bottom
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                  child: Column(
-                    children: [
-                      SizedBox(
-                        width: double.infinity,
-                        height: 48,
-                        child: ElevatedButton(
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: const Color(0xFF2E7D32),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(12),
-                            ),
-                            elevation: 0,
-                          ),
-                          onPressed: () {
-                            showDialog(
-                              context: context,
-                              builder: (context) => PaymentDialog(
-                                productId:
-                                    PaymentService.matchAcceptanceProductId,
-                                amount: '20 ILS',
-                                description: 'Accept match and join the game',
-                                onPaymentSuccess: () {
-                                  ref
-                                      .read(userProvider.notifier)
-                                      .setSearchingForBuddies(
-                                        BuddiesState.notStarted,
-                                      );
-                                  Navigator.pop(context);
-                                },
-                              ),
-                            );
-                          },
-                          child: Text(
-                            AppLocalizations.of(context).acceptMatch,
-                            style: const TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.w600,
-                              color: Colors.white,
-                            ),
-                          ),
-                        ),
-                      ),
-                      const SizedBox(height: 8),
-                      SizedBox(
-                        width: double.infinity,
-                        height: 44,
-                        child: TextButton(
-                          onPressed: () {
-                            ref
-                                .read(userProvider.notifier)
-                                .setSearchingForBuddies(
-                                    BuddiesState.notStarted);
-                          },
-                          child: Text(
-                            AppLocalizations.of(context).skip,
-                            style: const TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.w600,
-                              color: Colors.grey,
-                            ),
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ],
-            ),
-          );
+          
+          return _buildMatchContent(context, ref, matchInfo);
         },
       ),
+
     );
   }
 
@@ -300,9 +102,7 @@ class FoundMatchPage extends ConsumerWidget {
     try {
       final userState = ref.read(userProvider);
       final matchId = userState.matchId;
-      print('DEBUG: matchId = $matchId');
       if (matchId == null) {
-        print('DEBUG: matchId is null');
         return null;
       }
 
@@ -315,22 +115,17 @@ class FoundMatchPage extends ConsumerWidget {
       TimeSlotModel? timeSlot;
       try {
         timeSlot = await ref.read(userProvider.notifier).getCurrentMatchTimeSlot();
-        print('DEBUG: timeSlot = ${timeSlot?.id}');
       } catch (e) {
         print('DEBUG: Error getting timeSlot: $e');
       }
 
-      // Get user IDs from match
       final userIds = await matchesRepo.getMatchUserIds(matchId: matchId);
-      print('DEBUG: userIds = $userIds');
 
-      // Get user details
       List<UserModel> users = [];
       for (final uid in userIds) {
         final user = await userRepo.getUser(uid);
         if (user != null) {
           users.add(user);
-          print('DEBUG: Added user ${user.firstName}');
         }
       }
 
@@ -338,18 +133,313 @@ class FoundMatchPage extends ConsumerWidget {
       dynamic club;
       if (timeSlot != null) {
         final court = await courtRepo.getCourtById(timeSlot.courtId);
-        print('DEBUG: court = ${court?.name}');
         if (court != null) {
           club = await clubRepo.getClubById(court.clubId);
-          print('DEBUG: club = ${club?.name}');
         }
       }
 
-      print('DEBUG: Returning match info with ${users.length} users');
       return {'timeSlot': timeSlot, 'users': users, 'club': club};
     } catch (e) {
-      print('Error getting match info: $e');
       rethrow;
+    }
+  }
+
+  Widget _buildMatchContent(
+    BuildContext context,
+    WidgetRef ref,
+    Map<String, dynamic> matchInfo,
+  ) {
+    final slot = matchInfo['timeSlot'] as TimeSlotModel?;
+    final club = matchInfo['club'] as ClubModel?;
+    final users = matchInfo['users'] as List<UserModel>?;
+    final currentUserId = ref.read(authProvider).user?.uid;
+
+    if (slot == null) {
+      return Center(child: Text(AppLocalizations.of(context).noMatchFound));
+    }
+
+    final timeLabel =
+        "${slot.start.hour.toString().padLeft(2, '0')}:${slot.start.minute.toString().padLeft(2, '0')} - "
+        "${slot.end.hour.toString().padLeft(2, '0')}:${slot.end.minute.toString().padLeft(2, '0')}";
+
+    return SafeArea(
+      child: Column(
+        children: [
+          Expanded(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+              child: Column(
+                children: [
+                  Container(
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(16),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withOpacity(0.08),
+                          blurRadius: 12,
+                          offset: const Offset(0, 2),
+                        ),
+                      ],
+                    ),
+                    padding: const EdgeInsets.all(20),
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            const Icon(
+                              Icons.access_time,
+                              color: Color(0xFF2E7D32),
+                              size: 28,
+                            ),
+                            const SizedBox(width: 12),
+                            Text(
+                              timeLabel,
+                              style: const TextStyle(
+                                fontSize: 22,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.black87,
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 18),
+                        if (club != null)
+                          Column(
+                            children: [
+                              ClubImageWidget(
+                                club: club,
+                                width: 80,
+                                height: 80,
+                                borderRadius: 14,
+                              ),
+                              const SizedBox(height: 14),
+                              Text(
+                                club.name,
+                                style: const TextStyle(
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.black87,
+                                ),
+                                textAlign: TextAlign.center,
+                                maxLines: 2,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            ],
+                          ),
+                        const SizedBox(height: 18),
+                        Container(
+                          height: 1.5,
+                          color: Colors.grey.shade200,
+                        ),
+                        const SizedBox(height: 16),
+                        Text(
+                          AppLocalizations.of(context).players,
+                          style: const TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w600,
+                            color: Colors.grey,
+                          ),
+                        ),
+                        const SizedBox(height: 14),
+                        if (users != null && users.isNotEmpty)
+                          Column(
+                            children: [
+                              Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.center,
+                                children: [
+                                  for (int i = 0; i < 2 && i < users.length; i++) ...[
+                                    _buildPlayerAvatar(
+                                      user: users[i],
+                                      isCurrentUser:
+                                          users[i].id == currentUserId,
+                                    ),
+                                    if (i == 0)
+                                      const SizedBox(width: 24),
+                                  ],
+                                ],
+                              ),
+                              if (users.length > 2) ...[
+                                const SizedBox(height: 16),
+                                Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.center,
+                                  children: [
+                                    for (int i = 2; i < 4 && i < users.length; i++) ...[
+                                      _buildPlayerAvatar(
+                                        user: users[i],
+                                        isCurrentUser:
+                                            users[i].id == currentUserId,
+                                      ),
+                                      if (i == 2)
+                                        const SizedBox(width: 24),
+                                    ],
+                                  ],
+                                ),
+                              ],
+                            ],
+                          )
+                        else
+                          Text(AppLocalizations.of(context).noPlayersFound, style: const TextStyle(fontSize: 12)),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+            child: Column(
+              children: [
+                SizedBox(
+                  width: double.infinity,
+                  height: 48,
+                  child: ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: const Color(0xFF2E7D32),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      elevation: 0,
+                    ),
+                    onPressed: () {
+                      showDialog(
+                        context: context,
+                        builder: (context) => PaymentDialog(
+                          productId:
+                              PaymentService.matchAcceptanceProductId,
+                          amount: '20 ILS',
+                          description: 'Accept match and join the game',
+                          onPaymentSuccess: () {
+                            ref
+                                .read(userProvider.notifier)
+                                .setSearchingForBuddies(
+                                  BuddiesState.notStarted,
+                                );
+                            Navigator.pop(context);
+                          },
+                        ),
+                      );
+                    },
+                    child: Text(
+                      AppLocalizations.of(context).acceptMatch,
+                      style: const TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w600,
+                        color: Colors.white,
+                      ),
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 8),
+                SizedBox(
+                  width: double.infinity,
+                  height: 44,
+                  child: TextButton(
+                    onPressed: () {
+                      ref
+                          .read(userProvider.notifier)
+                          .setSearchingForBuddies(
+                              BuddiesState.notStarted);
+                      _handleSkipInBackground(context, ref);
+                    },
+                    child: Text(
+                      AppLocalizations.of(context).skip,
+                      style: const TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w600,
+                        color: Colors.grey,
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Future<void> _preloadUserImages(BuildContext context, List<UserModel> users) async {
+    for (final user in users) {
+      if (user.profilePictureUrl != null && user.profilePictureUrl!.isNotEmpty) {
+        try {
+          await precacheImage(
+            NetworkImage(user.profilePictureUrl!),
+            context,
+          );
+        } catch (e) {
+          print('DEBUG: Error preloading image for ${user.firstName}: $e');
+        }
+      }
+    }
+  }
+
+  void _handleSkipInBackground(BuildContext context, WidgetRef ref) {
+    final userState = ref.read(userProvider);
+    final currentUserId = ref.read(authProvider).user?.uid;
+    final matchId = userState.matchId;
+
+    if (matchId == null || currentUserId == null) {
+      return;
+    }
+
+    // Perform cleanup in the background without blocking the UI
+    _performSkipCleanup(matchId, currentUserId);
+  }
+
+  void _performSkipCleanup(String matchId, String currentUserId) async {
+    try {
+      final matchesRepo = MatchesRepository();
+      final userRepo = UserRepository();
+      final searchReqRepo = SearchRequestsRepository();
+      final timeSlotRepo = TimeSlotRepository();
+
+      // Get match details to get the time slot ID
+      final matchDetails = await matchesRepo.getMatchDetails(matchId: matchId);
+      final timeSlotId = matchDetails?['timeSlotId'] as String?;
+
+      // Get all user IDs in the match
+      final userIds = await matchesRepo.getMatchUserIds(matchId: matchId);
+      final otherUserIds = userIds.where((id) => id != currentUserId).toList();
+
+      // Delete the match
+      await matchesRepo.deleteMatch(matchId: matchId);
+
+      // Set time slot back to available
+      if (timeSlotId != null) {
+        await timeSlotRepo.setTimeSlotAvailable(timeSlotId);
+      }
+
+      // Delete current user's search request
+      final currentUserSearchReqId = await searchReqRepo.getSearchRequestIdForUser(currentUserId);
+      if (currentUserSearchReqId != null) {
+        await searchReqRepo.deleteSearchRequest(currentUserSearchReqId);
+      }
+
+      // Reset the 3 other users
+      for (final userId in otherUserIds) {
+        // Get their search request ID
+        final searchReqId = await searchReqRepo.getSearchRequestIdForUser(userId);
+        if (searchReqId != null) {
+          // Set search request to available
+          await searchReqRepo.setSearchRequestAvailable(searchReqId, true);
+        }
+
+        // Reset user's state
+        await userRepo.updateUserData(
+          currentUserId: userId,
+          buddiesState: BuddiesState.searching,
+          matchId: null,
+        );
+      }
+    } catch (e) {
+      print('Error in background skip cleanup: $e');
     }
   }
 
