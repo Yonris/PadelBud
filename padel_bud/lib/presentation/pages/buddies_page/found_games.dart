@@ -10,8 +10,6 @@ import 'package:padel_bud/presentation/widgets/club_image_widget.dart';
 import 'package:padel_bud/providers/providers.dart';
 import 'package:padel_bud/repositories/matches_repository.dart';
 import 'package:padel_bud/repositories/user_repository.dart';
-import 'package:padel_bud/repositories/court_repository.dart';
-import 'package:padel_bud/repositories/club_repository.dart';
 import 'package:padel_bud/repositories/search_requests_repository.dart';
 import 'package:padel_bud/repositories/time_slot_repository.dart';
 
@@ -20,6 +18,9 @@ class FoundMatchPage extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final userState = ref.watch(userProvider);
+    final matchId = userState.matchId;
+
     return Scaffold(
       backgroundColor: const Color(0xFFF7F9FC),
       appBar: AppBar(
@@ -55,93 +56,44 @@ class FoundMatchPage extends ConsumerWidget {
           ),
         ),
       ),
-      body: FutureBuilder<Map<String, dynamic>?>(
-        future: _getMatchInfo(ref),
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(child: CircularProgressIndicator());
-          }
-
-          if (snapshot.hasError) {
-            return Center(
-              child: Text(
-                '${AppLocalizations.of(context).error}: ${snapshot.error}',
-                style: const TextStyle(color: Colors.red),
-              ),
-            );
-          }
-
-          final matchInfo = snapshot.data;
-          if (matchInfo == null) {
-            return Center(child: Text(AppLocalizations.of(context).noMatchFound));
-          }
-
-          final users = matchInfo['users'] as List<UserModel>?;
-          
-          // Ensure all user profile images are loaded before rendering
-          if (users != null && users.isNotEmpty) {
-            return FutureBuilder<void>(
-              future: _preloadUserImages(context, users),
-              builder: (context, preloadSnapshot) {
-                if (preloadSnapshot.connectionState == ConnectionState.waiting) {
-                  return const Center(child: CircularProgressIndicator());
-                }
-                return _buildMatchContent(context, ref, matchInfo);
-              },
-            );
-          }
-          
-          return _buildMatchContent(context, ref, matchInfo);
-        },
-      ),
-
+      body: matchId == null
+          ? Center(child: Text(AppLocalizations.of(context).noMatchFound))
+          : _buildMatchBody(context, ref, matchId),
     );
   }
 
-  Future<Map<String, dynamic>?> _getMatchInfo(WidgetRef ref) async {
-    try {
-      final userState = ref.read(userProvider);
-      final matchId = userState.matchId;
-      if (matchId == null) {
-        return null;
-      }
-
-      final matchesRepo = MatchesRepository();
-      final userRepo = UserRepository();
-      final courtRepo = CourtRepository();
-      final clubRepo = ClubRepository();
-
-      // Get time slot from user provider
-      TimeSlotModel? timeSlot;
-      try {
-        timeSlot = await ref.read(userProvider.notifier).getCurrentMatchTimeSlot();
-      } catch (e) {
-        print('DEBUG: Error getting timeSlot: $e');
-      }
-
-      final userIds = await matchesRepo.getMatchUserIds(matchId: matchId);
-
-      List<UserModel> users = [];
-      for (final uid in userIds) {
-        final user = await userRepo.getUser(uid);
-        if (user != null) {
-          users.add(user);
+  Widget _buildMatchBody(BuildContext context, WidgetRef ref, String matchId) {
+    return ref.watch(foundMatchInfoProvider(matchId)).when(
+      data: (matchInfo) {
+        if (matchInfo == null) {
+          return Center(child: Text(AppLocalizations.of(context).noMatchFound));
         }
-      }
 
-      // Get club information
-      dynamic club;
-      if (timeSlot != null) {
-        final court = await courtRepo.getCourtById(timeSlot.courtId);
-        if (court != null) {
-          club = await clubRepo.getClubById(court.clubId);
+        final users = matchInfo['users'] as List<UserModel>?;
+        
+        // Ensure all user profile images are loaded before rendering
+        if (users != null && users.isNotEmpty) {
+          return FutureBuilder<void>(
+            future: _preloadUserImages(context, users),
+            builder: (context, preloadSnapshot) {
+              if (preloadSnapshot.connectionState == ConnectionState.waiting) {
+                return const Center(child: CircularProgressIndicator());
+              }
+              return _buildMatchContent(context, ref, matchInfo);
+            },
+          );
         }
-      }
-
-      return {'timeSlot': timeSlot, 'users': users, 'club': club};
-    } catch (e) {
-      rethrow;
-    }
+        
+        return _buildMatchContent(context, ref, matchInfo);
+      },
+      loading: () => const Center(child: CircularProgressIndicator()),
+      error: (error, stackTrace) => Center(
+        child: Text(
+          '${AppLocalizations.of(context).error}: $error',
+          style: const TextStyle(color: Colors.red),
+        ),
+      ),
+    );
   }
 
   Widget _buildMatchContent(
@@ -254,8 +206,8 @@ class FoundMatchPage extends ConsumerWidget {
                                   for (int i = 0; i < 2 && i < users.length; i++) ...[
                                     _buildPlayerAvatar(
                                       user: users[i],
-                                      isCurrentUser:
-                                          users[i].id == currentUserId,
+                                      hasAccepted:
+                                          (matchInfo['acceptedUserIds'] as List<String>?)?.contains(users[i].id) ?? false,
                                     ),
                                     if (i == 0)
                                       const SizedBox(width: 24),
@@ -271,8 +223,8 @@ class FoundMatchPage extends ConsumerWidget {
                                     for (int i = 2; i < 4 && i < users.length; i++) ...[
                                       _buildPlayerAvatar(
                                         user: users[i],
-                                        isCurrentUser:
-                                            users[i].id == currentUserId,
+                                        hasAccepted:
+                                            (matchInfo['acceptedUserIds'] as List<String>?)?.contains(users[i].id) ?? false,
                                       ),
                                       if (i == 2)
                                         const SizedBox(width: 24),
@@ -314,7 +266,17 @@ class FoundMatchPage extends ConsumerWidget {
                               PaymentService.matchAcceptanceProductId,
                           amount: '20 ILS',
                           description: 'Accept match and join the game',
-                          onPaymentSuccess: () {
+                          onPaymentSuccess: () async {
+                            final matchId = ref.read(userProvider).matchId;
+                            final currentUserId = ref.read(authProvider).user?.uid;
+                            
+                            if (matchId != null && currentUserId != null) {
+                              await MatchesRepository().addUserToAcceptedList(
+                                matchId: matchId,
+                                userId: currentUserId,
+                              );
+                            }
+                            
                             ref
                                 .read(userProvider.notifier)
                                 .setSearchingForBuddies(
@@ -445,7 +407,7 @@ class FoundMatchPage extends ConsumerWidget {
 
   Widget _buildPlayerAvatar({
     required UserModel user,
-    required bool isCurrentUser,
+    required bool hasAccepted,
   }) {
     final displayName = user.firstName.isNotEmpty ? user.firstName : 'User';
     final initials = displayName[0].toUpperCase();
@@ -497,7 +459,7 @@ class FoundMatchPage extends ConsumerWidget {
                       ),
                     ),
             ),
-            if (isCurrentUser)
+            if (hasAccepted)
               Positioned(
                 bottom: 0,
                 right: 0,

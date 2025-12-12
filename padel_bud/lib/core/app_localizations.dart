@@ -356,10 +356,14 @@ abstract class AppLocalizations {
   String get currency;
   String get pricing;
 
+  String get bookingTime;
+
 }
 
 class AppLocalizationsEn extends AppLocalizations {
   // Basic Navigation & App
+  @override
+  String get bookingTime => 'Booking Time';
   @override
   String get appTitle => 'PadelBud';
   @override
@@ -894,7 +898,7 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get confirmPayment => 'Confirm Payment';
   @override
-  String get amount => 'Amount';
+  String get amount => 'cost';
 
   // Club Creation & Management
   @override
@@ -1007,6 +1011,8 @@ class AppLocalizationsEn extends AppLocalizations {
 
 class AppLocalizationsHe extends AppLocalizations {
   // Basic Navigation & App
+  @override
+  String get bookingTime => 'זמן הזמנה';
   @override
   String get appTitle => 'PadelBud';
   @override

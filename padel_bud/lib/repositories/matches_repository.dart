@@ -35,4 +35,17 @@ class MatchesRepository {
   Future<void> deleteMatch({required String matchId}) async {
     await _db.doc(matchId).delete();
   }
+
+  Stream<Map<String, dynamic>?> matchStream({required String matchId}) {
+    return _db.doc(matchId).snapshots().map((snapshot) {
+      if (!snapshot.exists) return null;
+      return snapshot.data();
+    });
+  }
+
+  Future<void> addUserToAcceptedList({required String matchId, required String userId}) async {
+    await _db.doc(matchId).update({
+      'acceptedUserIds': FieldValue.arrayUnion([userId])
+    });
+  }
 }

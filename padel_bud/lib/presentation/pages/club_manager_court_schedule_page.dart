@@ -29,19 +29,26 @@ class _ClubManagerCourtSchedulePageState
   List<CourtModel> _courts = [];
   Map<String, List<TimeSlotModel>> _courtTimeSlots = {};
   Map<String, bool> _expandedCourts = {}; // Track which courts are expanded
+  Set<String> _updatingSlots = {}; // Track slots being updated
   bool _loading = true;
   late TabController _tabController;
+  late AnimationController _fadeController;
 
   @override
   void initState() {
     super.initState();
     _tabController = TabController(length: 2, vsync: this);
+    _fadeController = AnimationController(
+      duration: const Duration(milliseconds: 300),
+      vsync: this,
+    );
     _loadData();
   }
 
   @override
   void dispose() {
     _tabController.dispose();
+    _fadeController.dispose();
     super.dispose();
   }
 
@@ -77,6 +84,7 @@ class _ClubManagerCourtSchedulePageState
         _expandedCourts = {for (var court in courts) court.id: true};
         _loading = false;
       });
+      _fadeController.forward();
     } catch (e) {
       ScaffoldMessenger.of(
         context,
@@ -447,6 +455,35 @@ class _ClubManagerCourtSchedulePageState
     }
   }
 
+  Future<void> _toggleTimeSlotAvailability(TimeSlotModel slot) async {
+    setState(() => _updatingSlots.add(slot.id));
+
+    try {
+      final timeSlotRepo = TimeSlotRepository();
+      if (slot.available) {
+        await timeSlotRepo.markTimeSlotAsBooked(slot.id);
+      } else {
+        await timeSlotRepo.setTimeSlotAvailable(slot.id);
+      }
+
+      // Update local state
+      slot.available = !slot.available;
+      setState(() => _updatingSlots.remove(slot.id));
+
+      
+    } catch (e) {
+      setState(() => _updatingSlots.remove(slot.id));
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('${AppLocalizations.of(context).error}: $e'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -454,6 +491,7 @@ class _ClubManagerCourtSchedulePageState
       appBar: AppBar(
         elevation: 0,
         centerTitle: false,
+        iconTheme: const IconThemeData(color: Colors.white),
         backgroundColor: Colors.transparent,
         flexibleSpace: Container(
           decoration: const BoxDecoration(
@@ -931,17 +969,33 @@ class _ClubManagerCourtSchedulePageState
           )
         : RefreshIndicator(
             onRefresh: _loadData,
+            color: Colors.green.shade600,
             child: ListView.builder(
-              padding: const EdgeInsets.all(16),
-              itemCount: _courts.length,
-              itemBuilder: (context, index) {
-                final court = _courts[index];
-                final slots = _courtTimeSlots[court.id] ?? [];
-                final isExpanded = _expandedCourts[court.id] ?? true;
-                return _buildCourtCard(court, slots, isExpanded);
-              },
-            ),
-          );
+                padding: const EdgeInsets.all(16),
+                itemCount: _courts.length,
+                itemBuilder: (context, index) {
+                  final court = _courts[index];
+                  final slots = _courtTimeSlots[court.id] ?? [];
+                  final isExpanded = _expandedCourts[court.id] ?? true;
+                  return SlideTransition(
+                    position: Tween<Offset>(
+                      begin: const Offset(0.1, 0),
+                      end: Offset.zero,
+                    ).animate(
+                      CurvedAnimation(
+                        parent: _fadeController,
+                        curve: Interval(
+                          index * 0.05,
+                          (index * 0.05) + 0.4,
+                          curve: Curves.easeOutCubic,
+                        ),
+                      ),
+                    ),
+                    child: _buildCourtCard(court, slots, isExpanded),
+                  );
+                },
+              ),
+            );
   }
 
   Widget _buildCourtCard(
@@ -950,16 +1004,16 @@ class _ClubManagerCourtSchedulePageState
     bool isExpanded,
   ) {
     return Container(
-      margin: const EdgeInsets.only(bottom: 16),
+      margin: const EdgeInsets.only(bottom: 20),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(20),
         border: Border.all(color: Colors.green.shade200, width: 2),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.08),
-            blurRadius: 12,
-            offset: const Offset(0, 4),
+            color: Colors.green.withOpacity(0.15),
+            blurRadius: 16,
+            offset: const Offset(0, 6),
           ),
         ],
       ),
@@ -971,60 +1025,71 @@ class _ClubManagerCourtSchedulePageState
                 _expandedCourts[court.id] = !isExpanded;
               });
             },
-            child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 18),
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  colors: [Colors.green.shade50, Colors.green.shade100],
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
+            child: MouseRegion(
+              cursor: SystemMouseCursors.click,
+              child: AnimatedContainer(
+                duration: const Duration(milliseconds: 100),
+                curve: Curves.easeOutCubic,
+                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 18),
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    colors: [Colors.green.shade50, Colors.green.shade100],
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                  ),
+                  borderRadius: const BorderRadius.only(
+                    topLeft: Radius.circular(18),
+                    topRight: Radius.circular(18),
+                  ),
+                  border: Border(
+                    bottom: BorderSide(color: Colors.green.shade200, width: 1),
+                  ),
                 ),
-                borderRadius: const BorderRadius.only(
-                  topLeft: Radius.circular(18),
-                  topRight: Radius.circular(18),
-                ),
-                border: Border(
-                  bottom: BorderSide(color: Colors.green.shade200, width: 1),
-                ),
-              ),
-              child: Row(
-                children: [
-                  const SizedBox(width: 16),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          court.name,
-                          style: const TextStyle(
-                            fontSize: 20,
-                            fontWeight: FontWeight.w800,
-                            color: Colors.black87,
+                child: Row(
+                  children: [
+                    const SizedBox(width: 16),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            court.name,
+                            style: const TextStyle(
+                              fontSize: 20,
+                              fontWeight: FontWeight.w800,
+                              color: Colors.black87,
+                            ),
                           ),
-                        ),
-                        const SizedBox(height: 2),
-                        Text(
-                          '${slots.length} ${AppLocalizations.of(context).available}',
-                          style: TextStyle(
-                            fontSize: 13,
-                            fontWeight: FontWeight.w500,
-                            color: Colors.green.shade600,
+                          const SizedBox(height: 2),
+                          Text(
+                            '${slots.length} ${AppLocalizations.of(context).available}',
+                            style: TextStyle(
+                              fontSize: 13,
+                              fontWeight: FontWeight.w500,
+                              color: Colors.green.shade600,
+                            ),
                           ),
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
-                  ),
-                  Icon(
-                    isExpanded ? Icons.expand_less : Icons.expand_more,
-                    color: Colors.green.shade600,
-                    size: 28,
-                  ),
-                ],
+                    AnimatedRotation(
+                      turns: isExpanded ? 0.5 : 0,
+                      duration: const Duration(milliseconds: 150),
+                      curve: Curves.easeOutCubic,
+                      child: Icon(
+                        Icons.expand_more,
+                        color: Colors.green.shade600,
+                        size: 28,
+                      ),
+                    ),
+                  ],
+                ),
               ),
             ),
           ),
-          if (isExpanded)
-            Padding(
+          AnimatedCrossFade(
+            firstChild: const SizedBox.shrink(),
+            secondChild: Padding(
               padding: const EdgeInsets.all(20),
               child: slots.isEmpty
                   ? Center(
@@ -1058,6 +1123,12 @@ class _ClubManagerCourtSchedulePageState
                       ],
                     ),
             ),
+            crossFadeState: isExpanded
+                ? CrossFadeState.showSecond
+                : CrossFadeState.showFirst,
+            duration: const Duration(milliseconds: 100),
+            sizeCurve: Curves.easeOutCubic,
+          ),
         ],
       ),
     );
@@ -1068,34 +1139,15 @@ class _ClubManagerCourtSchedulePageState
     final bookedCount = slots.where((s) => !s.available).length;
 
     return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          colors: [Colors.grey.shade50, Colors.grey.shade100],
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-        ),
-        borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: Colors.grey.shade200, width: 1),
-      ),
+      padding: const EdgeInsets.all(18),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
-            'Slot Overview',
-            style: TextStyle(
-              fontSize: 13,
-              fontWeight: FontWeight.w700,
-              color: Colors.grey.shade700,
-              letterSpacing: 0.5,
-            ),
-          ),
-          const SizedBox(height: 12),
           Row(
             children: [
               Expanded(
                 child: Container(
-                  padding: const EdgeInsets.all(12),
+                  padding: const EdgeInsets.all(14),
                   decoration: BoxDecoration(
                     color: Colors.green.shade50,
                     borderRadius: BorderRadius.circular(12),
@@ -1119,19 +1171,19 @@ class _ClubManagerCourtSchedulePageState
                             AppLocalizations.of(context).available,
                             style: TextStyle(
                               fontSize: 11,
-                              fontWeight: FontWeight.w600,
+                              fontWeight: FontWeight.w700,
                               color: Colors.green.shade700,
                               letterSpacing: 0.3,
                             ),
                           ),
                         ],
                       ),
-                      const SizedBox(height: 6),
+                      const SizedBox(height: 8),
                       Text(
                         '$availableCount',
                         style: TextStyle(
-                          fontSize: 24,
-                          fontWeight: FontWeight.w800,
+                          fontSize: 28,
+                          fontWeight: FontWeight.w900,
                           color: Colors.green.shade700,
                         ),
                       ),
@@ -1142,7 +1194,7 @@ class _ClubManagerCourtSchedulePageState
               const SizedBox(width: 12),
               Expanded(
                 child: Container(
-                  padding: const EdgeInsets.all(12),
+                  padding: const EdgeInsets.all(14),
                   decoration: BoxDecoration(
                     color: Colors.red.shade50,
                     borderRadius: BorderRadius.circular(12),
@@ -1163,19 +1215,19 @@ class _ClubManagerCourtSchedulePageState
                             AppLocalizations.of(context).booked,
                             style: TextStyle(
                               fontSize: 11,
-                              fontWeight: FontWeight.w600,
+                              fontWeight: FontWeight.w700,
                               color: Colors.red.shade700,
                               letterSpacing: 0.3,
                             ),
                           ),
                         ],
                       ),
-                      const SizedBox(height: 6),
+                      const SizedBox(height: 8),
                       Text(
                         '$bookedCount',
                         style: TextStyle(
-                          fontSize: 24,
-                          fontWeight: FontWeight.w800,
+                          fontSize: 28,
+                          fontWeight: FontWeight.w900,
                           color: Colors.red.shade700,
                         ),
                       ),
@@ -1201,11 +1253,14 @@ class _ClubManagerCourtSchedulePageState
         children: List.generate(slots.length, (index) {
           final slot = slots[index];
           final isAvailable = slot.available;
+          final isUpdating = _updatingSlots.contains(slot.id);
           final startTime = DateFormat('HH:mm').format(slot.start);
           final endTime = DateFormat('HH:mm').format(slot.end);
           final date = DateFormat('MMM d, EEE').format(slot.start);
 
-          return Container(
+          return AnimatedContainer(
+            duration: const Duration(milliseconds: 80),
+            curve: Curves.easeOutCubic,
             decoration: BoxDecoration(
               color: Colors.white,
               border: index < slots.length - 1
@@ -1228,44 +1283,58 @@ class _ClubManagerCourtSchedulePageState
             child: Material(
               color: Colors.transparent,
               child: InkWell(
-                onTap: () {
-                  // Add action here if needed
-                },
+                onTap: () => _toggleTimeSlotAvailability(slot),
+                borderRadius: index == 0
+                    ? const BorderRadius.only(
+                        topLeft: Radius.circular(13),
+                        topRight: Radius.circular(13),
+                      )
+                    : index == slots.length - 1
+                    ? const BorderRadius.only(
+                        bottomLeft: Radius.circular(13),
+                        bottomRight: Radius.circular(13),
+                      )
+                    : BorderRadius.zero,
                 child: Padding(
                   padding: const EdgeInsets.all(14),
                   child: Row(
                     children: [
-                      Container(
-                        width: 44,
-                        height: 44,
-                        decoration: BoxDecoration(
-                          gradient: isAvailable
-                              ? LinearGradient(
-                                  colors: [
-                                    Colors.green.shade100,
-                                    Colors.green.shade50,
-                                  ],
-                                )
-                              : LinearGradient(
-                                  colors: [
-                                    Colors.red.shade100,
-                                    Colors.red.shade50,
-                                  ],
-                                ),
-                          borderRadius: BorderRadius.circular(10),
-                          border: Border.all(
-                            color: isAvailable
-                                ? Colors.green.shade300
-                                : Colors.red.shade300,
-                            width: 1.5,
+                      AnimatedScale(
+                        duration: const Duration(milliseconds: 80),
+                        curve: Curves.easeOutCubic,
+                        scale: isUpdating ? 1.1 : 1.0,
+                        child: Container(
+                          width: 44,
+                          height: 44,
+                          decoration: BoxDecoration(
+                            gradient: isAvailable
+                                ? LinearGradient(
+                                    colors: [
+                                      Colors.green.shade100,
+                                      Colors.green.shade50,
+                                    ],
+                                  )
+                                : LinearGradient(
+                                    colors: [
+                                      Colors.red.shade100,
+                                      Colors.red.shade50,
+                                    ],
+                                  ),
+                            borderRadius: BorderRadius.circular(10),
+                            border: Border.all(
+                              color: isAvailable
+                                  ? Colors.green.shade300
+                                  : Colors.red.shade300,
+                              width: 1.5,
+                            ),
                           ),
-                        ),
-                        child: Icon(
-                          isAvailable ? Icons.check_circle : Icons.event_busy,
-                          color: isAvailable
-                              ? Colors.green.shade600
-                              : Colors.red.shade600,
-                          size: 24,
+                          child: Icon(
+                            isAvailable ? Icons.check_circle : Icons.event_busy,
+                            color: isAvailable
+                                ? Colors.green.shade600
+                                : Colors.red.shade600,
+                            size: 24,
+                          ),
                         ),
                       ),
                       const SizedBox(width: 14),
@@ -1304,46 +1373,66 @@ class _ClubManagerCourtSchedulePageState
                         ),
                       ),
                       const SizedBox(width: 12),
-                      Container(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 12,
-                          vertical: 8,
-                        ),
-                        decoration: BoxDecoration(
-                          gradient: isAvailable
-                              ? LinearGradient(
-                                  colors: [
-                                    Colors.green.shade50,
-                                    Colors.green.shade100,
-                                  ],
-                                )
-                              : LinearGradient(
-                                  colors: [
-                                    Colors.red.shade50,
-                                    Colors.red.shade100,
-                                  ],
-                                ),
-                          borderRadius: BorderRadius.circular(8),
-                          border: Border.all(
-                            color: isAvailable
-                                ? Colors.green.shade300
-                                : Colors.red.shade300,
-                            width: 1,
+                      if (isUpdating)
+                        Container(
+                          width: 44,
+                          height: 36,
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          child: const Center(
+                            child: SizedBox(
+                              width: 20,
+                              height: 20,
+                              child: CircularProgressIndicator(
+                                strokeWidth: 2,
+                              ),
+                            ),
+                          ),
+                        )
+                      else
+                        AnimatedContainer(
+                          duration: const Duration(milliseconds: 80),
+                          curve: Curves.easeOutCubic,
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 12,
+                            vertical: 8,
+                          ),
+                          decoration: BoxDecoration(
+                            gradient: isAvailable
+                                ? LinearGradient(
+                                    colors: [
+                                      Colors.green.shade50,
+                                      Colors.green.shade100,
+                                    ],
+                                  )
+                                : LinearGradient(
+                                    colors: [
+                                      Colors.red.shade50,
+                                      Colors.red.shade100,
+                                    ],
+                                  ),
+                            borderRadius: BorderRadius.circular(8),
+                            border: Border.all(
+                              color: isAvailable
+                                  ? Colors.green.shade300
+                                  : Colors.red.shade300,
+                              width: 1,
+                            ),
+                          ),
+                          child: Text(
+                            isAvailable
+                                ? AppLocalizations.of(context).available
+                                : AppLocalizations.of(context).booked,
+                            style: TextStyle(
+                              fontSize: 12,
+                              fontWeight: FontWeight.w700,
+                              color: isAvailable
+                                  ? Colors.green.shade700
+                                  : Colors.red.shade700,
+                            ),
                           ),
                         ),
-                        child: Text(
-                          isAvailable
-                              ? AppLocalizations.of(context).available
-                              : AppLocalizations.of(context).booked,
-                          style: TextStyle(
-                            fontSize: 12,
-                            fontWeight: FontWeight.w700,
-                            color: isAvailable
-                                ? Colors.green.shade700
-                                : Colors.red.shade700,
-                          ),
-                        ),
-                      ),
                     ],
                   ),
                 ),

@@ -231,8 +231,21 @@ async function generateTimeSlotsForCourt(courtId: string, daysAhead: number = 7)
         }
 
         const court = courtDoc.data();
-        if (!court || !court.schedule) {
-            console.log(`Court ${courtId} has no schedule`);
+        if (!court || !court.clubId) {
+            console.log(`Court ${courtId} has no clubId`);
+            return 0;
+        }
+
+        // Get the club to fetch the schedule
+        const clubDoc = await db.collection("clubs").doc(court.clubId).get();
+        if (!clubDoc.exists) {
+            console.log(`Club ${court.clubId} not found`);
+            return 0;
+        }
+
+        const club = clubDoc.data();
+        if (!club || !club.schedule) {
+            console.log(`Club ${court.clubId} has no schedule`);
             return 0;
         }
 
@@ -254,7 +267,7 @@ async function generateTimeSlotsForCourt(courtId: string, daysAhead: number = 7)
                 "Sunday",
             ][date.getDay() === 0 ? 6 : date.getDay() - 1];
 
-            const daySched = court.schedule[weekdayName];
+            const daySched = club.schedule[weekdayName];
             if (!daySched || daySched.closed) {
                 continue;
             }
@@ -282,17 +295,16 @@ async function generateTimeSlotsForCourt(courtId: string, daysAhead: number = 7)
                 const slotEnd = new Date(slotStart);
                 slotEnd.setMinutes(slotEnd.getMinutes() + gameDuration);
 
-                // Check if slot already exists
-                const existingSnap = await db
-                    .collection("time_slots")
-                    .where("courtId", "==", courtId)
-                    .where("start", "==", slotStart)
-                    .where("end", "==", slotEnd)
-                    .get();
+                // Create a deterministic document ID based on court, date, and time
+                const slotStartISO = slotStart.toISOString().replace(/[:.]/g, "-");
+                const slotId = `${courtId}_${slotStartISO}`;
 
-                if (existingSnap.empty) {
+                // Check if slot already exists
+                const existingDoc = await db.collection("time_slots").doc(slotId).get();
+
+                if (!existingDoc.exists) {
                     // Create new slot
-                    await db.collection("time_slots").add({
+                    await db.collection("time_slots").doc(slotId).set({
                         courtId: courtId,
                         start: slotStart,
                         end: slotEnd,
