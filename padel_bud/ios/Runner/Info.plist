@@ -45,5 +45,15 @@
 	<true/>
 	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>This app needs your location to help you find nearby padel courts.</string>
+	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
+	<string>This app needs your location to help you find nearby padel courts.</string>
+	<key>NSCameraUsageDescription</key>
+	<string>Camera permission is needed to take photos for your profile and matches.</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>Photo library access is needed to select images for your profile and matches.</string>
+	<key>NSPhotoLibraryAddOnlyUsageDescription</key>
+	<string>Permission to save photos to your library.</string>
 </dict>
 </plist>
